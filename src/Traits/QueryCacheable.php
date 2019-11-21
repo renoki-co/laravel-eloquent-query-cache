@@ -7,7 +7,7 @@ use Rennokki\QueryCache\Query\Builder;
 trait QueryCacheable
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function newBaseQueryBuilder()
     {
