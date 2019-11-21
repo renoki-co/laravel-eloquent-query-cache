@@ -54,7 +54,7 @@ class Builder extends BaseBuilder
     protected $avoidCache = false;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function get($columns = ['*'])
     {
