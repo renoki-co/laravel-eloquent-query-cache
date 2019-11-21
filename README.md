@@ -1,6 +1,16 @@
 Laravel Eloquent Query Cache
 ===================================
 
+[![Build Status](https://travis-ci.org/rennokki/laravel-eloquent-query-cache.svg?branch=master)](https://travis-ci.org/rennokki/laravel-eloquent-query-cache)
+[![codecov](https://codecov.io/gh/rennokki/laravel-eloquent-query-cache/branch/master/graph/badge.svg)](https://codecov.io/gh/rennokki/laravel-eloquent-query-cache/branch/master)
+[![StyleCI](https://github.styleci.io/repos/134363104/shield?branch=master)](https://github.styleci.io/repos/134363104)
+[![Latest Stable Version](https://poser.pugx.org/rennokki/laravel-eloquent-query-cache/v/stable)](https://packagist.org/packages/rennokki/laravel-eloquent-query-cache)
+[![Total Downloads](https://poser.pugx.org/rennokki/laravel-eloquent-query-cache/downloads)](https://packagist.org/packages/rennokki/laravel-eloquent-query-cache)
+[![Monthly Downloads](https://poser.pugx.org/rennokki/laravel-eloquent-query-cache/d/monthly)](https://packagist.org/packages/rennokki/laravel-eloquent-query-cache)
+[![License](https://poser.pugx.org/rennokki/laravel-eloquent-query-cache/license)](https://packagist.org/packages/rennokki/laravel-eloquent-query-cache)
+
+[![PayPal](https://img.shields.io/badge/PayPal-donate-blue.svg)](https://paypal.me/rennokki)
+
 Laravel Eloquent Query Cache (LEQC; Le QC; Le Query Cache) is a package that brings the `remember()` functionality that has been removed from Laravel a long time ago.
 This package helps adding caching functionalities directly on the Eloquent level, making use of cache before retrieving the data from the DB.
 
