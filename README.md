@@ -79,7 +79,7 @@ $shelfTwoBooks = Book::whereShelf(2)->cacheFor(60)->cacheTags(['shelf:2'])->get(
 Book::flushQueryCache(['shelf:1']);
 ```
 
-Be careful tho - specifying cache tags does not change the behaviour of key storage.
+Be careful the - specifying cache tags does not change the behaviour of key storage.
 For example, the following two queries, altough the use the same tag, they have different keys stored in the caching database.
 
 ```php
