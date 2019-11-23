@@ -2,7 +2,9 @@
 
 namespace Rennokki\QueryCache\Test;
 
+use DB;
 use Cache;
+use Rennokki\QueryCache\Test\Models\Kid;
 use Rennokki\QueryCache\Test\Models\Post;
 
 class MethodsTest extends TestCase
@@ -66,6 +68,15 @@ class MethodsTest extends TestCase
         Post::flushQueryCache(['test2']);
 
         $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
+        $this->assertNotNull($cache);
+    }
+
+    public function test_hashed_key()
+    {
+        $kid = factory(Kid::class)->create();
+        $storedKid = Kid::cacheFor(now()->addHours(1))->first();
+        $cache = Cache::get('leqc:156667fa9bcb7fb8abb01018568648406f251ef65736e89e6fd27d08bc48b5bb');
+
         $this->assertNotNull($cache);
     }
 }

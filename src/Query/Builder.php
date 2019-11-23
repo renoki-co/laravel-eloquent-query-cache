@@ -78,7 +78,6 @@ class Builder extends BaseBuilder
         }
 
         $key = $this->getCacheKey('get');
-        $seconds = $this->cacheTime;
         $cache = $this->getCache();
         $callback = $this->getQueryCacheCallback($method, $columns);
 
@@ -202,12 +201,12 @@ class Builder extends BaseBuilder
     /**
      * Indicate that the query results should be cached.
      *
-     * @param  \DateTime|int  $seconds
+     * @param  \DateTime|int  $time
      * @return \Rennokki\QueryCache\Query\Builder
      */
-    public function cacheFor($seconds)
+    public function cacheFor($time)
     {
-        $this->cacheTime = $seconds;
+        $this->cacheTime = $time;
 
         return $this;
     }
