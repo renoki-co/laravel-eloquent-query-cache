@@ -20,7 +20,7 @@ This package adds caching support for **all** query methods.
 Hop into your console and install the package via Composer:
 
 ```bash
-$ composer require rennokki/rennokki/laravel-eloquent-query-cache
+$ composer require rennokki/laravel-eloquent-query-cache
 ```
 
 Each model that will accept query-by-query caching will have to use the `Rennokki\QueryCache\Traits\QueryCacheable` trait.
