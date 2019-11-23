@@ -87,12 +87,6 @@ $alice = Kid::whereName('Alice')->cacheFor(60)->cacheTags(['kids'])->first();
 $bob = Kid::whereName('Bob')->cacheFor(60)->cacheTags(['kids'])->first();
 ```
 
-In case you want to invalidate all the cache, don't specify an argument for the `flushQueryCache()` method:
-
-```php
-Problem::flushQueryCache(); // bye-bye problems!
-```
-
 ## Relationship Caching
 Relationships are just another queries. They can be intercepted and modified before the database is hit with the query. The following example needs the `Order` model (or the model associated with the `orders` relationship) to include the `QueryCacheable` trait.
 
@@ -109,7 +103,7 @@ $orders = $user->orders;
 The package automatically generate the keys needed to store the data in the cache store. However, prefixing them might be useful if the cache store is used by other applications and/or models and you want to manage the keys better to avoid collisions.
 
 ```php
-$bob = Kid::whereName('Bob')->cacheFor(60)->prefix('kids_')->first();
+$bob = Kid::whereName('Bob')->cacheFor(60)->cachePrefix('kids_')->first();
 ```
 
 If no prefix is specified, the string `leqc` is going to be used.
