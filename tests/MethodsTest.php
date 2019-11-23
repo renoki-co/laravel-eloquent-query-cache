@@ -2,7 +2,6 @@
 
 namespace Rennokki\QueryCache\Test;
 
-use DB;
 use Cache;
 use Rennokki\QueryCache\Test\Models\Kid;
 use Rennokki\QueryCache\Test\Models\Post;
