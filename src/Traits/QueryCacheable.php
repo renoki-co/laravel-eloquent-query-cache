@@ -28,7 +28,7 @@ trait QueryCacheable
         }
 
         if ($this->cachePrefix) {
-            $builder->prefix($this->cachePrefix);
+            $builder->cachePrefix($this->cachePrefix);
         }
 
         if ($this->cacheDriver) {
