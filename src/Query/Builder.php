@@ -101,10 +101,6 @@ class Builder extends BaseBuilder
         return function () use ($method, $columns) {
             $this->avoidCache = true;
 
-            if ($method === 'get') {
-                return $this->get($columns);
-            }
-
             return $this->{$method}($columns);
         };
     }
@@ -170,7 +166,7 @@ class Builder extends BaseBuilder
      * @param  array  $tags
      * @return bool
      */
-    public function flushQueryCache(array $tags = []): bool
+    public function flushQueryCache(array $tags = ['leqc']): bool
     {
         $cache = $this->getCacheDriver();
 
@@ -219,12 +215,11 @@ class Builder extends BaseBuilder
     /**
      * Indicate that the query results should be cached forever.
      *
-     * @param  string|null $key
      * @return \Illuminate\Database\Query\Builder|static
      */
-    public function cacheForever($key = null)
+    public function cacheForever()
     {
-        return $this->cacheFor(-1, $key);
+        return $this->cacheFor(-1);
     }
 
     /**
@@ -234,7 +229,7 @@ class Builder extends BaseBuilder
      */
     public function dontCache()
     {
-        $this->cacheTime = $this->cacheTags = null;
+        $this->avoidCache = true;
 
         return $this;
     }
@@ -255,7 +250,7 @@ class Builder extends BaseBuilder
      * @param  string  $prefix
      * @return \Rennokki\QueryCache\Query\Builder
      */
-    public function prefix(string $prefix)
+    public function cachePrefix(string $prefix)
     {
         $this->cachePrefix = $prefix;
 
