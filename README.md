@@ -77,6 +77,9 @@ $shelfTwoBooks = Book::whereShelf(2)->cacheFor(60)->cacheTags(['shelf:2'])->get(
 
 // After flushing the cache for shelf:1, the query of$shelfTwoBooks will still hit the cache if re-called again.
 Book::flushQueryCache(['shelf:1']);
+
+// Flushing also works for both tags, invalidating them both, not just the one tagged with shelf:1
+Book::flushQueryCache(['shelf:1', 'shelf:2']);
 ```
 
 Be careful tho - specifying cache tags does not change the behaviour of key storage.

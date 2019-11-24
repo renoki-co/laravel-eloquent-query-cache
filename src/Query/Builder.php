@@ -180,7 +180,7 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Flush the cache for a specific tag
+     * Flush the cache for a specific tag.
      *
      * @param  string  $tag
      * @return bool
