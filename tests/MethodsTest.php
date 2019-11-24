@@ -65,9 +65,28 @@ class MethodsTest extends TestCase
         $this->assertNotNull($cache);
 
         Post::flushQueryCache(['test2']);
+        Post::flushQueryCacheWithTag('test2');
 
         $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
         $this->assertNotNull($cache);
+    }
+
+    public function test_cache_flush_with_more_tags()
+    {
+        $post = factory(Post::class)->create();
+        $storedPost = Post::cacheFor(now()->addHours(1))->cacheTags(['test'])->first();
+
+        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
+        $this->assertNotNull($cache);
+
+        Post::flushQueryCache([
+            'test',
+            'test2',
+            'test3',
+        ]);
+
+        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
+        $this->assertNull($cache);
     }
 
     public function test_hashed_key()

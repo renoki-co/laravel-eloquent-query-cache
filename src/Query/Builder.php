@@ -19,9 +19,9 @@ class Builder extends BaseBuilder
      * The tags for the query cache. Can be useful
      * if flushing cache for specific tags only.
      *
-     * @var array
+     * @var null|array
      */
-    protected $cacheTags = [];
+    protected $cacheTags = null;
 
     /**
      * The cache driver to be used.
@@ -159,13 +159,12 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Flush the cache for the current model or
-     * flush cache containing specific tags.
+     * Flush the cache that contains specific tags.
      *
      * @param  array  $tags
      * @return bool
      */
-    public function flushQueryCache(array $tags = ['leqc']): bool
+    public function flushQueryCache(array $tags = []): bool
     {
         $cache = $this->getCacheDriver();
 
@@ -173,7 +172,28 @@ class Builder extends BaseBuilder
             return false;
         }
 
-        return $cache->tags($tags ?: $this->cacheTags)->flush();
+        foreach ($tags as $tag) {
+            self::flushQueryCacheWithTag($tag);
+        }
+
+        return true;
+    }
+
+    /**
+     * Flush the cache for a specific tag
+     *
+     * @param  string  $tag
+     * @return bool
+     */
+    public function flushQueryCacheWithTag(string $tag): bool
+    {
+        $cache = $this->getCacheDriver();
+
+        if (! method_exists($cache, 'tags')) {
+            return false;
+        }
+
+        return $cache->tags($tag)->flush();
     }
 
     /**
