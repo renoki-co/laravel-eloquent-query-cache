@@ -51,7 +51,7 @@ class Builder extends BaseBuilder
      *
      * @var bool
      */
-    protected $avoidCache = false;
+    protected $avoidCache = true;
 
     /**
      * {@inheritdoc}
