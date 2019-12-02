@@ -227,6 +227,7 @@ class Builder extends BaseBuilder
     public function cacheFor($time)
     {
         $this->cacheTime = $time;
+        $this->avoidCache = false;
 
         return $this;
     }
