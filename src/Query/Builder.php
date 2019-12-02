@@ -51,7 +51,7 @@ class Builder extends BaseBuilder
      *
      * @var bool
      */
-    protected $avoidCache = false;
+    protected $avoidCache = true;
 
     /**
      * {@inheritdoc}
@@ -227,6 +227,7 @@ class Builder extends BaseBuilder
     public function cacheFor($time)
     {
         $this->cacheTime = $time;
+        $this->avoidCache = false;
 
         return $this;
     }
