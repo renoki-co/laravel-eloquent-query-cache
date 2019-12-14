@@ -2,7 +2,7 @@
 
 namespace Rennokki\QueryCache\Traits;
 
-use Carbon\Carbon;
+use DateTime;
 
 trait QueryCacheModule
 {
@@ -10,7 +10,7 @@ trait QueryCacheModule
      * The number of seconds or the DateTime instance
      * that specifies how long to cache the query.
      *
-     * @var int|\DateTime|\Carbon\Carbon
+     * @var int|\DateTime
      */
     protected $cacheTime;
 
@@ -69,7 +69,7 @@ trait QueryCacheModule
         $callback = $this->getQueryCacheCallback($method, $columns);
         $time = $this->getCacheTime();
 
-        if ($time instanceof DateTime || $time instanceof Carbon || $time > 0) {
+        if ($time instanceof DateTime || $time > 0) {
             return $cache->remember($key, $time, $callback);
         }
 
@@ -188,7 +188,7 @@ trait QueryCacheModule
     /**
      * Indicate that the query results should be cached.
      *
-     * @param  \DateTime|\Carbon\Carbon|int  $time
+     * @param  \DateTime|int  $time
      * @return \Rennokki\QueryCache\Query\Builder
      */
     public function cacheFor($time)
@@ -329,7 +329,7 @@ trait QueryCacheModule
     /**
      * Get the cache time attribute.
      *
-     * @return int|\DateTime|\Carbon\Carbon
+     * @return int|\DateTime
      */
     public function getCacheTime()
     {
