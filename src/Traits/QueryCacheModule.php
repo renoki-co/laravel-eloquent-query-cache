@@ -56,9 +56,10 @@ trait QueryCacheModule
      * Get the cache from the current query.
      *
      * @param  array  $columns
+     * @param  string|null  $id
      * @return array
      */
-    public function getFromQueryCache(string $method = 'get', $columns = ['*'])
+    public function getFromQueryCache(string $method = 'get', $columns = ['*'], $id = null)
     {
         if (is_null($this->columns)) {
             $this->columns = $columns;
@@ -66,7 +67,7 @@ trait QueryCacheModule
 
         $key = $this->getCacheKey('get');
         $cache = $this->getCache();
-        $callback = $this->getQueryCacheCallback($method, $columns);
+        $callback = $this->getQueryCacheCallback($method, $columns, $id);
         $time = $this->getCacheTime();
 
         if ($time instanceof DateTime || $time > 0) {
@@ -81,9 +82,10 @@ trait QueryCacheModule
      *
      * @param  string  $method
      * @param  array  $columns
+     * @param  string|null  $id
      * @return \Closure
      */
-    public function getQueryCacheCallback(string $method = 'get', $columns = ['*'])
+    public function getQueryCacheCallback(string $method = 'get', $columns = ['*'], $id = null)
     {
         return function () use ($method, $columns) {
             $this->avoidCache = true;
