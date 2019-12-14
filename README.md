@@ -141,3 +141,115 @@ class Book extends Model
     public $cacheDriver = 'dynamodb'; // equivalent of ->cacheDriver('dynamodb');
 }
 ```
+
+## Implement the caching method to your own Builder class
+Since this package modifies the `newBaseQueryBuilder()` in the model, having multiple traits that
+modify this function will lead to an overlap.
+
+This can happen in case you are creating your own Builder class for another database drivers or simply to ease out your app query builder for more flexibility.
+
+To solve this, all you have to do is to add the `\Rennokki\QueryCache\Traits\QueryCacheModule` trait and the `\Rennokki\QueryCache\Contracts\QueryCacheModuleInterface` interface to your `Builder` class. Make sure that the model will no longer use the original `QueryCacheable` trait.
+
+```php
+use Rennokki\QueryCache\Traits\QueryCacheModule;
+use Illuminate\Database\Query\Builder as BaseBuilder; // the base laravel builder
+use Rennokki\QueryCache\Contract\QueryCacheModuleInterface;
+
+// MyCustomBuilder.php
+class MyCustomBuilder implements QueryCacheModuleInterface
+{
+    use QueryCacheModule;
+
+    // the rest of the logic here.
+}
+
+// MyBuilderTrait.php
+trait MyBuilderTrait
+{
+    protected function newBaseQueryBuilder()
+    {
+        return new MyCustomBuilder(
+            //
+        );
+    }
+}
+
+// app/CustomModel.php
+class CustomModel extends Model
+{
+    use MyBuilderTrait;
+}
+
+CustomModel::cacheFor(30)->customGetMethod();
+```
+
+## Generating your own key
+This is how the default key generation function looks like:
+```php
+public function generatePlainCacheKey(string $method = 'get', $id = null, $appends = null): string
+{
+    $name = $this->connection->getName();
+
+    // Count has no Sql, that's why it can't be used ->toSql()
+    if ($method === 'count') {
+        return $name.$method.$id.serialize($this->getBindings()).$appends;
+    }
+
+    return $name.$method.$id.$this->toSql().serialize($this->getBindings()).$appends;
+}
+```
+
+In some cases, like implementing your own Builder for MongoDB for example, you might not want to use the `toSql()` and use your own
+method of generating per-sql key. You can do so by overwriting the `MyCustomBuilder` class `generatePlainCacheKey()` with your own one.
+
+It is, however, highly recommended to use the most of the variables provided by the function to avoid cache overlapping issues.
+
+```php
+class MyCustomBuilder implements QueryCacheModuleInterface
+{
+    use QueryCacheModule;
+
+    public function generatePlainCacheKey(string $method = 'get', $id = null, $appends = null): string
+    {
+        $name = $this->connection->getName();
+
+        // Using ->myCustomSqlString() instead of ->toSql()
+        return $name.$method.$id.$this->myCustomSqlString().serialize($this->getBindings()).$appends;
+    }
+}
+```
+
+## Implementing cache for other functions than get()
+Since all of the Laravel Eloquent functions are based on it, the builder that comes with this package replaces only the `get()` one:
+```php
+class Builder
+{
+    public function get($columns = ['*'])
+    {
+        if (! $this->shouldAvoidCache()) {
+            return $this->getFromQueryCache('get', $columns);
+        }
+
+        return parent::get($columns);
+    }
+}
+```
+
+In case that you want to cache your own methods from your custom builder or, for instance, your `count()` method doesn't rely on `get()`, you can replace it using this syntax:
+```php
+class MyCustomBuilder
+{
+    public function count()
+    {
+        if (! $this->shouldAvoidCache()) {
+            return $this->getFromQueryCache('count');
+        }
+
+        return parent::count();
+    }
+}
+```
+
+In fact, you can also replace any eloquent method within your builder if you use `$this->shouldAvoidCache()` check and retrieve the cached data using `getFromQueryCache()` method, passing the method name as string, and, optionally, an array of columns that defaults to `['*']`.
+
+Notice that the `getFromQueryCache()` method accepts a method name and a `$columns` parameter. If your method doesn't implement the `$columns`, don't pass it.
