@@ -6,6 +6,11 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
 {
+    /**
+     * Set up the tests.
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         parent::setUp();
@@ -21,6 +26,12 @@ abstract class TestCase extends Orchestra
         $this->artisan('migrate', ['--database' => 'sqlite']);
     }
 
+    /**
+     * Get the package providers.
+     *
+     * @param  mixed  $app
+     * @return array
+     */
     protected function getPackageProviders($app)
     {
         return [
@@ -28,6 +39,12 @@ abstract class TestCase extends Orchestra
         ];
     }
 
+    /**
+     * Set up the environment.
+     *
+     * @param  mixed  $app
+     * @return void
+     */
     public function getEnvironmentSetUp($app)
     {
         $app['config']->set('database.default', 'sqlite');
@@ -42,11 +59,21 @@ abstract class TestCase extends Orchestra
         $app['config']->set('app.key', 'wslxrEFGWY6GfGhvN9L3wH3KSRJQQpBD');
     }
 
+    /**
+     * Reset the database.
+     *
+     * @return void
+     */
     protected function resetDatabase()
     {
         file_put_contents(__DIR__.'/database.sqlite', null);
     }
 
+    /**
+     * Clear the cache.
+     *
+     * @return void
+     */
     protected function clearCache()
     {
         $this->artisan('cache:clear');
