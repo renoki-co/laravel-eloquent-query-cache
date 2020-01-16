@@ -60,7 +60,7 @@ abstract class TestCase extends Orchestra
     }
 
     /**
-     * Reset the database
+     * Reset the database.
      *
      * @return void
      */
