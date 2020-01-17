@@ -1,7 +1,7 @@
 Laravel Eloquent Query Cache
 ===================================
 
-[![Build Status](https://travis-ci.org/rennokki/laravel-eloquent-query-cache.svg?branch=master)](https://travis-ci.org/rennokki/laravel-eloquent-query-cache)
+[![Build Status](https://travis-ci.com/rennokki/laravel-eloquent-query-cache.svg?branch=master)](https://travis-ci.com/rennokki/laravel-eloquent-query-cache)
 [![codecov](https://codecov.io/gh/rennokki/laravel-eloquent-query-cache/branch/master/graph/badge.svg)](https://codecov.io/gh/rennokki/laravel-eloquent-query-cache/branch/master)
 [![StyleCI](https://github.styleci.io/repos/223236785/shield?branch=master)](https://github.styleci.io/repos/223236785)
 [![Latest Stable Version](https://poser.pugx.org/rennokki/laravel-eloquent-query-cache/v/stable)](https://packagist.org/packages/rennokki/laravel-eloquent-query-cache)
