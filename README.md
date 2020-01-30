@@ -153,7 +153,7 @@ To solve this, all you have to do is to add the `\Rennokki\QueryCache\Traits\Que
 ```php
 use Rennokki\QueryCache\Traits\QueryCacheModule;
 use Illuminate\Database\Query\Builder as BaseBuilder; // the base laravel builder
-use Rennokki\QueryCache\Contract\QueryCacheModuleInterface;
+use Rennokki\QueryCache\Contracts\QueryCacheModuleInterface;
 
 // MyCustomBuilder.php
 class MyCustomBuilder implements QueryCacheModuleInterface
