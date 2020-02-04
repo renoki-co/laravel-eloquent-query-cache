@@ -46,7 +46,7 @@ class Article extends Model
 {
     use QueryCacheable;
 
-    $cacheFor = 3600; // cache time, in seconds
+    public $cacheFor = 3600; // cache time, in seconds
     ...
 }
 
