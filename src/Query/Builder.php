@@ -21,4 +21,18 @@ class Builder extends BaseBuilder implements QueryCacheModuleInterface
 
         return parent::get($columns);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function useWritePdo()
+    {
+        // Do not cache when using the write pdo for query.
+        $this->dontCache();
+
+        // Call parent method
+        parent::useWritePdo();
+
+        return $this;
+    }
 }

@@ -21,6 +21,8 @@ trait QueryCacheable
 
         if ($this->cacheFor) {
             $builder->cacheFor($this->cacheFor);
+        } else {
+            $builder->dontCache();
         }
 
         if ($this->cacheTags) {
