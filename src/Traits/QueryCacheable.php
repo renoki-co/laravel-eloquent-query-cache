@@ -54,7 +54,7 @@ trait QueryCacheable
     protected function getCacheBaseTags(): array
     {
         return [
-            (string) Self::class,
+            (string) self::class,
         ];
     }
 }
