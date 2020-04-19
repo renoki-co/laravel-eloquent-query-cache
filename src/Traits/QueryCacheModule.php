@@ -23,6 +23,14 @@ trait QueryCacheModule
     protected $cacheTags = null;
 
     /**
+     * The tags for the query cache that
+     * will be present on all queries.
+     *
+     * @var null|array
+     */
+    protected $cacheBaseTags = null;
+
+    /**
      * The cache driver to be used.
      *
      * @var string
@@ -171,6 +179,18 @@ trait QueryCacheModule
     }
 
     /**
+     * Flush all cached resources with the default model tag.
+     *
+     * @return bool
+     */
+    public function flushAllQueryCache(): bool
+    {
+        return self::flushQueryCache(
+            $this->getCacheBaseTags() ?: []
+        );
+    }
+
+    /**
      * Flush the cache for a specific tag.
      *
      * @param  string  $tag
@@ -273,6 +293,20 @@ trait QueryCacheModule
     }
 
     /**
+     * Set the base cache tags; the tags
+     * that will be present on all cached queries.
+     *
+     * @param  array  $tags
+     * @return \Rennokki\QueryCache\Query\Builder
+     */
+    public function cacheBaseTags(array $tags = [])
+    {
+        $this->cacheBaseTags = $tags;
+
+        return $this;
+    }
+
+    /**
      * Use a plain key instead of a hashed one in the cache driver.
      *
      * @return \Rennokki\QueryCache\Query\Builder
@@ -302,9 +336,13 @@ trait QueryCacheModule
     public function getCache()
     {
         $cache = $this->getCacheDriver();
-        $tags = $this->getCacheTags();
 
-        return $tags ? $cache->tags($tags) : $cache;
+        $tags = array_merge(
+            $this->getCacheTags() ?: [],
+            $this->getCacheBaseTags() ?: []
+        );
+
+        return $cache->tags($tags);
     }
 
     /**
@@ -346,6 +384,16 @@ trait QueryCacheModule
     public function getCacheTags()
     {
         return $this->cacheTags;
+    }
+
+    /**
+     * Get the base cache tags attribute.
+     *
+     * @return array|null
+     */
+    public function getCacheBaseTags()
+    {
+        return $this->cacheBaseTags;
     }
 
     /**

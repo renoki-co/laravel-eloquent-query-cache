@@ -41,6 +41,20 @@ trait QueryCacheable
             $builder->withPlainKey();
         }
 
-        return $builder;
+        return $builder
+            ->cacheBaseTags($this->getCacheBaseTags());
+    }
+
+    /**
+     * Set the base cache tags that will be present
+     * on all queries.
+     *
+     * @return array
+     */
+    protected function getCacheBaseTags(): array
+    {
+        return [
+            (string) Self::class,
+        ];
     }
 }
