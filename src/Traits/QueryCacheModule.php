@@ -342,7 +342,7 @@ trait QueryCacheModule
             $this->getCacheBaseTags() ?: []
         );
 
-        return $cache->tags($tags);
+        return $tags ? $cache->tags($tags) : $cache;
     }
 
     /**
