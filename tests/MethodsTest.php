@@ -3,6 +3,7 @@
 namespace Rennokki\QueryCache\Test;
 
 use Cache;
+use Rennokki\QueryCache\Test\Models\Book;
 use Rennokki\QueryCache\Test\Models\Kid;
 use Rennokki\QueryCache\Test\Models\Post;
 
@@ -91,15 +92,15 @@ class MethodsTest extends TestCase
 
     public function test_cache_flush_with_default_tags_attached()
     {
-        $post = factory(Post::class)->create();
-        $storedPost = Post::cacheFor(now()->addHours(1))->cacheTags(['test'])->first();
+        $book = factory(Book::class)->create();
+        $storedBook = Book::cacheFor(now()->addHours(1))->cacheTags(['test'])->first();
 
-        $cache = Cache::tags(['test', Post::getCacheBaseTags()[0]])->get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
+        $cache = Cache::tags(['test', Book::getCacheBaseTags()[0]])->get('leqc:sqlitegetselect * from "books" limit 1a:0:{}');
         $this->assertNotNull($cache);
 
-        Post::flushAllQueryCache();
+        Book::flushAllQueryCache();
 
-        $cache = Cache::tags(['test', Post::getCacheBaseTags()[0]])->get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
+        $cache = Cache::tags(['test', Book::getCacheBaseTags()[0]])->get('leqc:sqlitegetselect * from "books" limit 1a:0:{}');
 
         $this->assertNull($cache);
     }
