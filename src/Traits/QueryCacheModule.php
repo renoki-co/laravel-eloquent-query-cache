@@ -171,23 +171,15 @@ trait QueryCacheModule
             return false;
         }
 
+        if (! $tags) {
+            $tags = $this->getCacheBaseTags();
+        }
+
         foreach ($tags as $tag) {
             self::flushQueryCacheWithTag($tag);
         }
 
         return true;
-    }
-
-    /**
-     * Flush all cached resources with the default model tag.
-     *
-     * @return bool
-     */
-    public function flushAllQueryCache(): bool
-    {
-        return self::flushQueryCache(
-            $this->getCacheBaseTags() ?: []
-        );
     }
 
     /**

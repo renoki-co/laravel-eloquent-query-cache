@@ -92,15 +92,9 @@ $bob = Kid::whereName('Bob')->cacheFor(60)->cacheTags(['kids'])->first();
 
 ### Global Cache Invalidation
 
-To invalidate all the cache for a specific model, use the `flushAllQueryCache` method.
+To invalidate all the cache for a specific model, use the `flushQueryCache` method without any additional parameter.
 
 The package automatically appends a list of tags, called **base tags** on each query coming from a model. It defaults to the full model class name.
-
-You can still use your custom tags on the queries and they will work like usual:
-
-```php
-Kid::flushAllQueryCache();
-```
 
 In case you want to change the base tags, you can do so in your model.
 
@@ -124,7 +118,7 @@ class Kid extends Model
 }
 
 // Automatically works with `custom_tag`
-Kid::flushAllQueryCache();
+Kid::flushQueryCache();
 ```
 
 ## Relationship Caching

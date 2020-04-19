@@ -98,7 +98,7 @@ class MethodsTest extends TestCase
         $cache = Cache::tags(['test', Book::getCacheBaseTags()[0]])->get('leqc:sqlitegetselect * from "books" limit 1a:0:{}');
         $this->assertNotNull($cache);
 
-        Book::flushAllQueryCache();
+        Book::flushQueryCache();
 
         $cache = Cache::tags(['test', Book::getCacheBaseTags()[0]])->get('leqc:sqlitegetselect * from "books" limit 1a:0:{}');
 
