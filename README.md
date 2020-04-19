@@ -92,7 +92,7 @@ $bob = Kid::whereName('Bob')->cacheFor(60)->cacheTags(['kids'])->first();
 
 ### Global Cache Invalidation
 
-To invalidate all the cache for a specific model, use the `flushQueryCache` method without any additional parameter.
+To invalidate all the cache for a specific model, use the `flushQueryCache` method without passing the tags.
 
 The package automatically appends a list of tags, called **base tags** on each query coming from a model. It defaults to the full model class name.
 
