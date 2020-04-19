@@ -3,6 +3,7 @@
 namespace Rennokki\QueryCache\Test;
 
 use Cache;
+use Rennokki\QueryCache\Test\Models\Book;
 use Rennokki\QueryCache\Test\Models\Kid;
 use Rennokki\QueryCache\Test\Models\Post;
 
@@ -86,6 +87,21 @@ class MethodsTest extends TestCase
         ]);
 
         $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
+        $this->assertNull($cache);
+    }
+
+    public function test_cache_flush_with_default_tags_attached()
+    {
+        $book = factory(Book::class)->create();
+        $storedBook = Book::cacheFor(now()->addHours(1))->cacheTags(['test'])->first();
+
+        $cache = Cache::tags(['test', Book::getCacheBaseTags()[0]])->get('leqc:sqlitegetselect * from "books" limit 1a:0:{}');
+        $this->assertNotNull($cache);
+
+        Book::flushQueryCache();
+
+        $cache = Cache::tags(['test', Book::getCacheBaseTags()[0]])->get('leqc:sqlitegetselect * from "books" limit 1a:0:{}');
+
         $this->assertNull($cache);
     }
 

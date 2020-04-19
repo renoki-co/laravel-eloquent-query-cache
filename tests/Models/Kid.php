@@ -12,4 +12,11 @@ class Kid extends Model
     protected $fillable = [
         'name',
     ];
+
+    protected function getCacheBaseTags(): array
+    {
+        return [
+            //
+        ];
+    }
 }

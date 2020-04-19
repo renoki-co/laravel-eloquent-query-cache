@@ -90,6 +90,37 @@ $alice = Kid::whereName('Alice')->cacheFor(60)->cacheTags(['kids'])->first();
 $bob = Kid::whereName('Bob')->cacheFor(60)->cacheTags(['kids'])->first();
 ```
 
+### Global Cache Invalidation
+
+To invalidate all the cache for a specific model, use the `flushQueryCache` method without passing the tags.
+
+The package automatically appends a list of tags, called **base tags** on each query coming from a model. It defaults to the full model class name.
+
+In case you want to change the base tags, you can do so in your model.
+
+```php
+class Kid extends Model
+{
+    use QueryCacheable;
+
+    /**
+     * Set the base cache tags that will be present
+     * on all queries.
+     *
+     * @return array
+     */
+    protected function getCacheBaseTags(): array
+    {
+        return [
+            'custom_tag',
+        ];
+    }
+}
+
+// Automatically works with `custom_tag`
+Kid::flushQueryCache();
+```
+
 ## Relationship Caching
 Relationships are just another queries. They can be intercepted and modified before the database is hit with the query. The following example needs the `Order` model (or the model associated with the `orders` relationship) to include the `QueryCacheable` trait.
 

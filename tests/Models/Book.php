@@ -5,7 +5,7 @@ namespace Rennokki\QueryCache\Test\Models;
 use Illuminate\Database\Eloquent\Model;
 use Rennokki\QueryCache\Traits\QueryCacheable;
 
-class Post extends Model
+class Book extends Model
 {
     use QueryCacheable;
 
@@ -14,11 +14,4 @@ class Post extends Model
     protected $fillable = [
         'name',
     ];
-
-    protected function getCacheBaseTags(): array
-    {
-        return [
-            //
-        ];
-    }
 }
