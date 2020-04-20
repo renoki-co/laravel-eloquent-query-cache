@@ -319,3 +319,20 @@ class MyCustomBuilder
     }
 }
 ```
+
+## Contributing
+
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+
+## Security
+
+If you discover any security related issues, please email alex@renoki.org instead of using the issue tracker.
+
+## Credits
+
+- [Alex Renoki](https://github.com/rennokki)
+- [All Contributors](../../contributors)
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
