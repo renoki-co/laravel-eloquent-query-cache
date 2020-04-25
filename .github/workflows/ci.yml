@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['7.2', '7.3', '7.4']
+    name: PHP ${{ matrix.php }}
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/cache@v1
+      name: Cache dependencies
+      with:
+        path: ~/.composer/cache/files
+        key: composer-php-${{ matrix.php }}-${{ hashFiles('composer.json') }}
+    - name: Install dependencies
+      run: |
+        composer install --no-interaction --no-interaction --prefer-source
+    - name: Run tests
+      run: |
+        phpunit --coverage-text --coverage-clover=coverage.xml
+    - uses: codecov/codecov-action@v1
+      with:
+        fail_ci_if_error: true
