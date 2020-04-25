@@ -9,21 +9,18 @@ Laravel Eloquent Query Cache
 [![Monthly Downloads](https://poser.pugx.org/rennokki/laravel-eloquent-query-cache/d/monthly)](https://packagist.org/packages/rennokki/laravel-eloquent-query-cache)
 [![License](https://poser.pugx.org/rennokki/laravel-eloquent-query-cache/license)](https://packagist.org/packages/rennokki/laravel-eloquent-query-cache)
 
-[![PayPal](https://img.shields.io/badge/PayPal-donate-blue.svg)](https://paypal.me/rennokki)
-
-Laravel Eloquent Query Cache (LEQC; Le QC; Le Query Cache) is a package that brings the `remember()` functionality that has been removed from Laravel a long time ago.
-This package helps adding caching functionalities directly on the Eloquent level, making use of cache before retrieving the data from the DB.
-
-This package adds caching support for **all** query methods.
+Laravel Eloquent Query Cache brings back the `remember()` functionality that has been removed from Laravel a long time ago.
+It adds caching functionalities directly on the Eloquent level, making use of cache within your database queries.
 
 ## Installing the package
+
 Hop into your console and install the package via Composer:
 
 ```bash
 $ composer require rennokki/laravel-eloquent-query-cache
 ```
 
-Each model that will accept query-by-query caching will have to use the `Rennokki\QueryCache\Traits\QueryCacheable` trait.
+Each model you want cache on should use the `Rennokki\QueryCache\Traits\QueryCacheable` trait.
 
 ```php
 use Rennokki\QueryCache\Traits\QueryCacheable;
@@ -37,7 +34,9 @@ class Podcast extends Model
 ```
 
 ## Showcase
-Query Cache has the ability to track the SQL used and use it as a key in the cache storage, making the caching query-by-query a breeze.
+
+The package has the ability to track the SQL used and use it as a key in the cache storage,
+making the caching query-by-query a breeze.
 
 ```php
 use Rennokki\QueryCache\Traits\QueryCacheable;
@@ -57,9 +56,9 @@ $latestArticle = Article::latest()->first();
 $publishedArticles = Article::wherePublished(true)->get();
 ```
 
-In the above example, both queries have different keys in the cache storage, thus it doesn't matter what query we handle. By default, caching is disabled unless specifying a value for `$cacheFor`. As long as `$cacheFor` is existent and is greater than `0`, all queries will be cached.
+In the above example, both queries have different keys in the cache storage, thus it doesn't matter what query we handle. By default, caching is disabled unless you specify a value for `$cacheFor`. As long as `$cacheFor` is existent and is greater than `0`, all queries will be cached.
 
-It is also possible to enable caching for specific queries. This is the recommended way because it is easier to manage each query.
+It is also possible to enable caching for specific queries by not specifying `$cacheFor` and calling `cacheFor()` within your queries:
 
 ```php
 $postsCount = Post::cacheFor(60 * 60)->count();
@@ -69,11 +68,19 @@ $postsCount = Post::cacheFor(now()->addDays(1))->count();
 ```
 
 ## Cache Tags & Cache Invalidation
+
 Some caching stores accept tags. This is really useful if you plan on tagging your cached queries and invalidate only some of the queries when needed.
 
 ```php
-$shelfOneBooks = Book::whereShelf(1)->cacheFor(60)->cacheTags(['shelf:1'])->get();
-$shelfTwoBooks = Book::whereShelf(2)->cacheFor(60)->cacheTags(['shelf:2'])->get();
+$shelfOneBooks = Book::whereShelf(1)
+    ->cacheFor(60)
+    ->cacheTags(['shelf:1'])
+    ->get();
+
+$shelfTwoBooks = Book::whereShelf(2)
+    ->cacheFor(60)
+    ->cacheTags(['shelf:2'])
+    ->get();
 
 // After flushing the cache for shelf:1, the query of$shelfTwoBooks will still hit the cache if re-called again.
 Book::flushQueryCache(['shelf:1']);
@@ -86,8 +93,15 @@ Be careful tho - specifying cache tags does not change the behaviour of key stor
 For example, the following two queries, altough the use the same tag, they have different keys stored in the caching database.
 
 ```php
-$alice = Kid::whereName('Alice')->cacheFor(60)->cacheTags(['kids'])->first();
-$bob = Kid::whereName('Bob')->cacheFor(60)->cacheTags(['kids'])->first();
+$alice = Kid::whereName('Alice')
+    ->cacheFor(60)
+    ->cacheTags(['kids'])
+    ->first();
+
+$bob = Kid::whereName('Bob')
+    ->cacheFor(60)
+    ->cacheTags(['kids'])
+    ->first();
 ```
 
 ### Global Cache Invalidation
@@ -122,11 +136,14 @@ Kid::flushQueryCache();
 ```
 
 ## Relationship Caching
+
 Relationships are just another queries. They can be intercepted and modified before the database is hit with the query. The following example needs the `Order` model (or the model associated with the `orders` relationship) to include the `QueryCacheable` trait.
 
 ```php
 $user = User::with(['orders' => function ($query) {
-    return $query->cacheFor(60 * 60)->cacheTags(['my:orders']);
+    return $query
+        ->cacheFor(60 * 60)
+        ->cacheTags(['my:orders']);
 }])->get();
 
 // This comes from the cache if existed.
@@ -134,29 +151,40 @@ $orders = $user->orders;
 ```
 
 ## Cache Keys
+
 The package automatically generate the keys needed to store the data in the cache store. However, prefixing them might be useful if the cache store is used by other applications and/or models and you want to manage the keys better to avoid collisions.
 
 ```php
-$bob = Kid::whereName('Bob')->cacheFor(60)->cachePrefix('kids_')->first();
+$bob = Kid::whereName('Bob')
+    ->cacheFor(60)
+    ->cachePrefix('kids_')
+    ->first();
 ```
 
 If no prefix is specified, the string `leqc` is going to be used.
 
 ## Cache Drivers
+
 By default, the trait uses the default cache driver. If you want to **force** a specific one, you can do so by calling `cacheDriver()`:
 
 ```php
-$bob = Kid::whereName('Bob')->cacheFor(60)->cacheDriver('dynamodb')->first();
+$bob = Kid::whereName('Bob')
+    ->cacheFor(60)
+    ->cacheDriver('dynamodb')
+    ->first();
 ```
 
 ## Disable caching
-If you enabled caching (either by model variable or by the `cacheFor` scope), you can also opt to disable it mid-builder.
+
+If you enabled caching (either by model variable or by the `cacheFor` scope), you can also opt to disable it within your query builder chains:
+
 ```php
 $uncachedBooks = Book::dontCache()->get();
 $uncachedBooks = Book::doNotCache()->get(); // same thing
 ```
 
 ## Equivalent Methods and Variables
+
 You can use the methods provided in this documentation query-by-query, or you can set defaults for each one in the model; using the methods query-by-query will overwrite the defaults.
 While settings defaults is not mandatory (excepting for `$cacheFor` that will enable caching on **all** queries), it can be useful to avoid using the chained methods on each query.
 
@@ -174,6 +202,7 @@ class Book extends Model
 ```
 
 ## Implement the caching method to your own Builder class
+
 Since this package modifies the `newBaseQueryBuilder()` in the model, having multiple traits that
 modify this function will lead to an overlap.
 
@@ -215,7 +244,9 @@ CustomModel::cacheFor(30)->customGetMethod();
 ```
 
 ## Generating your own key
+
 This is how the default key generation function looks like:
+
 ```php
 public function generatePlainCacheKey(string $method = 'get', $id = null, $appends = null): string
 {
@@ -251,7 +282,9 @@ class MyCustomBuilder implements QueryCacheModuleInterface
 ```
 
 ## Implementing cache for other functions than get()
+
 Since all of the Laravel Eloquent functions are based on it, the builder that comes with this package replaces only the `get()` one:
+
 ```php
 class Builder
 {
@@ -267,6 +300,7 @@ class Builder
 ```
 
 In case that you want to cache your own methods from your custom builder or, for instance, your `count()` method doesn't rely on `get()`, you can replace it using this syntax:
+
 ```php
 class MyCustomBuilder
 {
