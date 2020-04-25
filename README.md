@@ -1,6 +1,3 @@
-Laravel Eloquent Query Cache
-===================================
-
 ![CI](https://github.com/renoki-co/laravel-eloquent-query-cache/workflows/CI/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/rennokki/laravel-eloquent-query-cache/branch/master/graph/badge.svg)](https://codecov.io/gh/rennokki/laravel-eloquent-query-cache/branch/master)
 [![StyleCI](https://github.styleci.io/repos/223236785/shield?branch=master)](https://github.styleci.io/repos/223236785)
@@ -8,6 +5,9 @@ Laravel Eloquent Query Cache
 [![Total Downloads](https://poser.pugx.org/rennokki/laravel-eloquent-query-cache/downloads)](https://packagist.org/packages/rennokki/laravel-eloquent-query-cache)
 [![Monthly Downloads](https://poser.pugx.org/rennokki/laravel-eloquent-query-cache/d/monthly)](https://packagist.org/packages/rennokki/laravel-eloquent-query-cache)
 [![License](https://poser.pugx.org/rennokki/laravel-eloquent-query-cache/license)](https://packagist.org/packages/rennokki/laravel-eloquent-query-cache)
+
+Laravel Eloquent Query Cache
+===================================
 
 Laravel Eloquent Query Cache brings back the `remember()` functionality that has been removed from Laravel a long time ago.
 It adds caching functionalities directly on the Eloquent level, making use of cache within your database queries.
