@@ -12,7 +12,7 @@ Laravel Eloquent Query Cache
 Laravel Eloquent Query Cache brings back the `remember()` functionality that has been removed from Laravel a long time ago.
 It adds caching functionalities directly on the Eloquent level, making use of cache within your database queries.
 
-## Installing the package
+# Installing the package
 
 Hop into your console and install the package via Composer:
 
@@ -67,7 +67,7 @@ $postsCount = Post::cacheFor(60 * 60)->count();
 $postsCount = Post::cacheFor(now()->addDays(1))->count();
 ```
 
-## Cache Tags & Cache Invalidation
+# Cache Tags & Cache Invalidation
 
 Some caching stores accept tags. This is really useful if you plan on tagging your cached queries and invalidate only some of the queries when needed.
 
@@ -104,7 +104,7 @@ $bob = Kid::whereName('Bob')
     ->first();
 ```
 
-### Global Cache Invalidation
+## Global Cache Invalidation
 
 To invalidate all the cache for a specific model, use the `flushQueryCache` method without passing the tags.
 
@@ -200,6 +200,8 @@ class Book extends Model
     public $cacheDriver = 'dynamodb'; // equivalent of ->cacheDriver('dynamodb');
 }
 ```
+
+# Advanced
 
 ## Implement the caching method to your own Builder class
 
