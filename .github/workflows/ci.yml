@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         php: ['7.2', '7.3', '7.4']
-    name: Testing
+    name: PHP {{ matrix.php }}
     steps:
     - uses: actions/checkout@v1
     - name: Download Composer cache dependencies from cache
