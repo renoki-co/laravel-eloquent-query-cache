@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         php: ['7.2', '7.3', '7.4']
-    name: PHP {{ matrix.php }}
+    name: PHP ${{ matrix.php }}
     steps:
     - uses: actions/checkout@v1
     - uses: actions/cache@v1
