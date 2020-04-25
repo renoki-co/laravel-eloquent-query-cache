@@ -1,5 +1,5 @@
 ![CI](https://github.com/renoki-co/laravel-eloquent-query-cache/workflows/CI/badge.svg?branch=master)
-[![codecov](https://codecov.io/gh/rennokki/laravel-eloquent-query-cache/branch/master/graph/badge.svg)](https://codecov.io/gh/rennokki/laravel-eloquent-query-cache/branch/master)
+[![codecov](https://codecov.io/gh/renoki-co/laravel-eloquent-query-cache/branch/master/graph/badge.svg)](https://codecov.io/gh/renoki-co/laravel-eloquent-query-cache/branch/master)
 [![StyleCI](https://github.styleci.io/repos/223236785/shield?branch=master)](https://github.styleci.io/repos/223236785)
 [![Latest Stable Version](https://poser.pugx.org/rennokki/laravel-eloquent-query-cache/v/stable)](https://packagist.org/packages/rennokki/laravel-eloquent-query-cache)
 [![Total Downloads](https://poser.pugx.org/rennokki/laravel-eloquent-query-cache/downloads)](https://packagist.org/packages/rennokki/laravel-eloquent-query-cache)
