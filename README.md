@@ -135,24 +135,9 @@ class Kid extends Model
 Kid::flushQueryCache();
 ```
 
-## Relationship Caching
-
-Relationships are just another queries. They can be intercepted and modified before the database is hit with the query. The following example needs the `Order` model (or the model associated with the `orders` relationship) to include the `QueryCacheable` trait.
-
-```php
-$user = User::with(['orders' => function ($query) {
-    return $query
-        ->cacheFor(60 * 60)
-        ->cacheTags(['my:orders']);
-}])->get();
-
-// This comes from the cache if existed.
-$orders = $user->orders;
-```
-
 ## Full Automatic Invalidation
 
-To speed up the scaffolding of invalidation within your app, you can specify the model to auto-flush the cache upon any model gets created, updated or deleted.
+To speed up the scaffolding of invalidation within your app, you can specify the model to auto-flush the cache upon any time records gets created, updated or deleted.
 
 ```php
 class Page extends Model
@@ -223,6 +208,21 @@ $page->update([
 **Please keep in mind: Setting `$flushCacheOnUpdate` to `true` and not specifying individual tags to invalidate will lead to [Full Automatic Invalidation](#full-automatic-invalidation) since the default tags to invalidate are the base tags and you need at least one tag to invalidate.**
 
 **Not specifying a tag to invalidate fallbacks to the set of base tags, thus leading to Full Automatic Invalidation.**
+
+## Relationship Caching
+
+Relationships are just another queries. They can be intercepted and modified before the database is hit with the query. The following example needs the `Order` model (or the model associated with the `orders` relationship) to include the `QueryCacheable` trait.
+
+```php
+$user = User::with(['orders' => function ($query) {
+    return $query
+        ->cacheFor(60 * 60)
+        ->cacheTags(['my:orders']);
+}])->get();
+
+// This comes from the cache if existed.
+$orders = $user->orders;
+```
 
 ## Cache Keys
 
