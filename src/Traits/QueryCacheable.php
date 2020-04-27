@@ -2,7 +2,6 @@
 
 namespace Rennokki\QueryCache\Traits;
 
-use Illuminate\Database\Eloquent\Model;
 use Rennokki\QueryCache\FlushQueryCacheObserver;
 use Rennokki\QueryCache\Query\Builder;
 
@@ -33,7 +32,6 @@ trait QueryCacheable
 
     /**
      * {@inheritdoc}
-     *
      */
     public static function boot()
     {
