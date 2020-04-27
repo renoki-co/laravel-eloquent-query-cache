@@ -2,10 +2,48 @@
 
 namespace Rennokki\QueryCache\Traits;
 
+use Rennokki\QueryCache\FlushQueryCacheObserver;
 use Rennokki\QueryCache\Query\Builder;
 
 trait QueryCacheable
 {
+    /**
+     * Get the observer class name that will
+     * observe the changes and will invalidate the cache
+     * upon database change.
+     *
+     * @return string
+     */
+    protected static function getFlushQueryCacheObserver()
+    {
+        return FlushQueryCacheObserver::class;
+    }
+
+    /**
+     * When invalidating automatically on update, you can specify
+     * which tags to invalidate.
+     *
+     * @return array
+     */
+    public function getCacheTagsToInvalidateOnUpdate(): array
+    {
+        return $this->getCacheBaseTags();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        if (isset(static::$flushCacheOnUpdate) && static::$flushCacheOnUpdate) {
+            static::observe(
+                static::getFlushQueryCacheObserver()
+            );
+        }
+    }
+
     /**
      * {@inheritdoc}
      */
