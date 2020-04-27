@@ -150,6 +150,80 @@ $user = User::with(['orders' => function ($query) {
 $orders = $user->orders;
 ```
 
+## Full Automatic Invalidation
+
+To speed up the scaffolding of invalidation within your app, you can specify the model to auto-flush the cache upon any model gets created, updated or deleted.
+
+```php
+class Page extends Model
+{
+    use QueryCacheable;
+
+    /**
+     * Invalidate the cache automatically
+     * upon update in the database.
+     */
+    protected static $flushCacheOnUpdate = true;
+}
+```
+
+When you set up the `$flushCacheOnUpdate` variable, the package attaches an observer to your model, and any `created`, `updated`, `deleted`, `forceDeleted` or `restored` event will trigger the cache invalidation.
+
+> In order for auto-flush to work, you will need at least one **base tag**. Out-of-the-box, the model has a base tag set. In some cases, if you have overwritten the `getCacheBaseTags()` with an empty array, it might not work.
+
+## Partial Automatic Invalidation
+
+In some cases, you might not want to invalidate the whole cache of a specific model. Perhaps you got two queries that run individually and want to invalidate the cache only for one of them.
+
+To do this, overwrite your `getCacheTagsToInvalidateOnUpdate()` method in your model:
+
+```php
+class Page extends Model
+{
+    use QueryCacheable;
+
+    /**
+     * Invalidate the cache automatically
+     * upon update in the database.
+     */
+    protected static $flushCacheOnUpdate = true;
+
+    /**
+     * When invalidating automatically on update, you can specify
+     * which tags to invalidate.
+     *
+     * @return array
+     */
+    public function getCacheTagsToInvalidateOnUpdate(): array
+    {
+        return [
+            'query1',
+        ];
+    }
+}
+
+$query1 = Page::cacheFor(60)
+    ->cacheTags(['query1'])
+    ->get();
+
+$query2 = Page::cacheFor(60)
+    ->cacheTags(['query2'])
+    ->get();
+
+// The $query1 gets invalidated
+// but $query2 will still hit from cache if re-called.
+
+$page = Page::first();
+
+$page->update([
+    'name' => 'Reddit',
+]);
+```
+
+**Please keep in mind: Setting `$flushCacheOnUpdate` to `true` and not specifying individual tags to invalidate will lead to [Full Automatic Invalidation](#full-automatic-invalidation) since the default tags to invalidate are the base tags and you need at least one tag to invalidate.**
+
+**Not specifying a tag to invalidate fallbacks to the set of base tags, thus leading to Full Automatic Invalidation.**
+
 ## Cache Keys
 
 The package automatically generate the keys needed to store the data in the cache store. However, prefixing them might be useful if the cache store is used by other applications and/or models and you want to manage the keys better to avoid collisions.
