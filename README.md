@@ -1,3 +1,6 @@
+Laravel Eloquent Query Cache
+============================
+
 ![CI](https://github.com/renoki-co/laravel-eloquent-query-cache/workflows/CI/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/renoki-co/laravel-eloquent-query-cache/branch/master/graph/badge.svg)](https://codecov.io/gh/renoki-co/laravel-eloquent-query-cache/branch/master)
 [![StyleCI](https://github.styleci.io/repos/223236785/shield?branch=master)](https://github.styleci.io/repos/223236785)
@@ -6,13 +9,10 @@
 [![Monthly Downloads](https://poser.pugx.org/rennokki/laravel-eloquent-query-cache/d/monthly)](https://packagist.org/packages/rennokki/laravel-eloquent-query-cache)
 [![License](https://poser.pugx.org/rennokki/laravel-eloquent-query-cache/license)](https://packagist.org/packages/rennokki/laravel-eloquent-query-cache)
 
-Laravel Eloquent Query Cache
-===================================
-
 Laravel Eloquent Query Cache brings back the `remember()` functionality that has been removed from Laravel a long time ago.
 It adds caching functionalities directly on the Eloquent level, making use of cache within your database queries.
 
-# Installing the package
+## 🚀 Installation
 
 Hop into your console and install the package via Composer:
 
@@ -33,7 +33,7 @@ class Podcast extends Model
 }
 ```
 
-## Showcase
+## 🙌 Usage
 
 The package has the ability to track the SQL used and use it as a key in the cache storage,
 making the caching query-by-query a breeze.
@@ -67,7 +67,7 @@ $postsCount = Post::cacheFor(60 * 60)->count();
 $postsCount = Post::cacheFor(now()->addDays(1))->count();
 ```
 
-# Cache Tags & Cache Invalidation
+## Cache Tags & Cache Invalidation
 
 Some caching stores accept tags. This is really useful if you plan on tagging your cached queries and invalidate only some of the queries when needed.
 
@@ -275,9 +275,9 @@ class Book extends Model
 }
 ```
 
-# Advanced
+## Advanced
 
-## Implement the caching method to your own Builder class
+### Implement the caching method to your own Builder class
 
 Since this package modifies the `newBaseQueryBuilder()` in the model, having multiple traits that
 modify this function will lead to an overlap.
@@ -319,7 +319,7 @@ class CustomModel extends Model
 CustomModel::cacheFor(30)->customGetMethod();
 ```
 
-## Generating your own key
+### Generating your own key
 
 This is how the default key generation function looks like:
 
@@ -357,7 +357,7 @@ class MyCustomBuilder implements QueryCacheModuleInterface
 }
 ```
 
-## Implementing cache for other functions than get()
+### Implementing cache for other functions than get()
 
 Since all of the Laravel Eloquent functions are based on it, the builder that comes with this package replaces only the `get()` one:
 
@@ -430,19 +430,25 @@ class MyCustomBuilder
 }
 ```
 
-## Contributing
+## 🐛 Testing
+
+``` bash
+vendor/bin/phpunit
+```
+
+## 🤝 Contributing
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
-## Security
+## 🔒  Security
 
 If you discover any security related issues, please email alex@renoki.org instead of using the issue tracker.
 
-## Credits
+## 🎉 Credits
 
 - [Alex Renoki](https://github.com/rennokki)
 - [All Contributors](../../contributors)
 
-## License
+## 📄 License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
