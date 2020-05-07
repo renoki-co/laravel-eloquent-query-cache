@@ -147,6 +147,8 @@ class Page extends Model
     /**
      * Invalidate the cache automatically
      * upon update in the database.
+     *
+     * @var bool
      */
     protected static $flushCacheOnUpdate = true;
 }
@@ -170,6 +172,8 @@ class Page extends Model
     /**
      * Invalidate the cache automatically
      * upon update in the database.
+     *
+     * @var bool
      */
     protected static $flushCacheOnUpdate = true;
 
