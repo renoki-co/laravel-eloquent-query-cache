@@ -2,6 +2,7 @@
 
 namespace Rennokki\QueryCache;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 
 class FlushQueryCacheObserver
