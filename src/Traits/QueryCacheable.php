@@ -31,12 +31,12 @@ trait QueryCacheable
     }
 
     /**
-     * {@inheritdoc}
+     * Boot the trait.
+     *
+     * @return void
      */
-    public static function boot()
+    public static function bootQueryCacheable()
     {
-        parent::boot();
-
         if (isset(static::$flushCacheOnUpdate) && static::$flushCacheOnUpdate) {
             static::observe(
                 static::getFlushQueryCacheObserver()
