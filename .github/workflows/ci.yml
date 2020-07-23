@@ -26,7 +26,7 @@ jobs:
         key: composer-php-${{ matrix.php }}-${{ hashFiles('composer.json') }}
     - name: Install dependencies
       run: |
-        composer install --no-interaction --prefer-stable
+        composer update --no-interaction --prefer-stable
     - name: Run tests
       run: |
         phpunit --coverage-text --coverage-clover=coverage.xml
