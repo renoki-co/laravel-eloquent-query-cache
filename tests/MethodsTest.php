@@ -36,10 +36,15 @@ class MethodsTest extends TestCase
         $post = factory(Post::class)->create();
         $storedPost = Post::cacheFor(now()->addHours(1))->cacheTags(['test'])->first();
 
-        $cache = Cache::get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
-        $this->assertNull($cache);
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
 
-        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
+        // The caches that do not support tagging should
+        // cache the query either way.
+        $this->driverSupportsTags()
+            ? $this->assertNull($cache)
+            : $this->assertNotNull($cache);
+
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
         $this->assertNotNull($cache);
     }
 
@@ -48,12 +53,12 @@ class MethodsTest extends TestCase
         $post = factory(Post::class)->create();
         $storedPost = Post::cacheFor(now()->addHours(1))->cacheTags(['test'])->first();
 
-        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
         $this->assertNotNull($cache);
 
         Post::flushQueryCache(['test']);
 
-        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
         $this->assertNull($cache);
     }
 
@@ -62,14 +67,19 @@ class MethodsTest extends TestCase
         $post = factory(Post::class)->create();
         $storedPost = Post::cacheFor(now()->addHours(1))->cacheTags(['test'])->first();
 
-        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
         $this->assertNotNull($cache);
 
         Post::flushQueryCache(['test2']);
         Post::flushQueryCacheWithTag('test2');
 
-        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
-        $this->assertNotNull($cache);
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
+
+        // The caches that do not support tagging should
+        // flush the cache either way since tags are not supported.
+        $this->driverSupportsTags()
+            ? $this->assertNotNull($cache)
+            : $this->assertNull($cache);
     }
 
     public function test_cache_flush_with_more_tags()
@@ -77,7 +87,7 @@ class MethodsTest extends TestCase
         $post = factory(Post::class)->create();
         $storedPost = Post::cacheFor(now()->addHours(1))->cacheTags(['test'])->first();
 
-        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
         $this->assertNotNull($cache);
 
         Post::flushQueryCache([
@@ -86,7 +96,7 @@ class MethodsTest extends TestCase
             'test3',
         ]);
 
-        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
         $this->assertNull($cache);
     }
 
@@ -95,12 +105,12 @@ class MethodsTest extends TestCase
         $book = factory(Book::class)->create();
         $storedBook = Book::cacheFor(now()->addHours(1))->cacheTags(['test'])->first();
 
-        $cache = Cache::tags(['test', Book::getCacheBaseTags()[0]])->get('leqc:sqlitegetselect * from "books" limit 1a:0:{}');
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "books" limit 1a:0:{}', ['test', Book::getCacheBaseTags()[0]]);
         $this->assertNotNull($cache);
 
         Book::flushQueryCache();
 
-        $cache = Cache::tags(['test', Book::getCacheBaseTags()[0]])->get('leqc:sqlitegetselect * from "books" limit 1a:0:{}');
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "books" limit 1a:0:{}', ['test', Book::getCacheBaseTags()[0]]);
 
         $this->assertNull($cache);
     }
