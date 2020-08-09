@@ -2,7 +2,6 @@
 
 namespace Rennokki\QueryCache\Test;
 
-use Cache;
 use Rennokki\QueryCache\Test\Models\Page;
 
 class FlushCacheOnUpdateTest extends TestCase
