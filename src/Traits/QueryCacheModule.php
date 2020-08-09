@@ -2,6 +2,7 @@
 
 namespace Rennokki\QueryCache\Traits;
 
+use BadMethodCallException;
 use DateTime;
 
 trait QueryCacheModule
@@ -192,11 +193,11 @@ trait QueryCacheModule
     {
         $cache = $this->getCacheDriver();
 
-        if (! method_exists($cache, 'tags')) {
-            return false;
+        try {
+            return $cache->tags($tag)->flush();
+        } catch (BadMethodCallException $e) {
+            return $cache->flush();
         }
-
-        return $cache->tags($tag)->flush();
     }
 
     /**
@@ -334,7 +335,11 @@ trait QueryCacheModule
             $this->getCacheBaseTags() ?: []
         );
 
-        return $tags ? $cache->tags($tags) : $cache;
+        try {
+            return $tags ? $cache->tags($tags) : $cache;
+        } catch (BadMethodCallException $e) {
+            return $cache;
+        }
     }
 
     /**

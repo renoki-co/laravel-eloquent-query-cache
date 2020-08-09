@@ -2,7 +2,6 @@
 
 namespace Rennokki\QueryCache\Test;
 
-use Cache;
 use Rennokki\QueryCache\Test\Models\Page;
 
 class FlushCacheOnUpdateTest extends TestCase
@@ -11,7 +10,7 @@ class FlushCacheOnUpdateTest extends TestCase
     {
         $page = factory(Page::class)->create();
         $storedPage = Page::cacheFor(now()->addHours(1))->first();
-        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "pages" limit 1a:0:{}');
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
 
         $this->assertNotNull($cache);
 
@@ -24,7 +23,7 @@ class FlushCacheOnUpdateTest extends TestCase
             'name' => '9GAG',
         ]);
 
-        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "pages" limit 1a:0:{}');
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
 
         $this->assertNull($cache);
     }
@@ -33,7 +32,7 @@ class FlushCacheOnUpdateTest extends TestCase
     {
         $page = factory(Page::class)->create();
         $storedPage = Page::cacheFor(now()->addHours(1))->first();
-        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "pages" limit 1a:0:{}');
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
 
         $this->assertNotNull($cache);
 
@@ -46,7 +45,7 @@ class FlushCacheOnUpdateTest extends TestCase
             'name' => '9GAG',
         ]);
 
-        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "pages" limit 1a:0:{}');
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
 
         $this->assertNull($cache);
     }
@@ -55,7 +54,7 @@ class FlushCacheOnUpdateTest extends TestCase
     {
         $page = factory(Page::class)->create();
         $storedPage = Page::cacheFor(now()->addHours(1))->first();
-        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "pages" limit 1a:0:{}');
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
 
         $this->assertNotNull($cache);
 
@@ -66,7 +65,7 @@ class FlushCacheOnUpdateTest extends TestCase
 
         $page->delete();
 
-        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "pages" limit 1a:0:{}');
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
 
         $this->assertNull($cache);
     }
@@ -75,7 +74,7 @@ class FlushCacheOnUpdateTest extends TestCase
     {
         $page = factory(Page::class)->create();
         $storedPage = Page::cacheFor(now()->addHours(1))->first();
-        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "pages" limit 1a:0:{}');
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
 
         $this->assertNotNull($cache);
 
@@ -86,7 +85,7 @@ class FlushCacheOnUpdateTest extends TestCase
 
         $page->forceDelete();
 
-        $cache = Cache::tags(['test'])->get('leqc:sqlitegetselect * from "pages" limit 1a:0:{}');
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
 
         $this->assertNull($cache);
     }

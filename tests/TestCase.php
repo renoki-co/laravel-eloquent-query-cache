@@ -2,14 +2,13 @@
 
 namespace Rennokki\QueryCache\Test;
 
+use Cache;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
 {
     /**
-     * Set up the tests.
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function setUp(): void
     {
@@ -27,10 +26,7 @@ abstract class TestCase extends Orchestra
     }
 
     /**
-     * Get the package providers.
-     *
-     * @param  mixed  $app
-     * @return array
+     * {@inheritdoc}
      */
     protected function getPackageProviders($app)
     {
@@ -40,10 +36,7 @@ abstract class TestCase extends Orchestra
     }
 
     /**
-     * Set up the environment.
-     *
-     * @param  mixed  $app
-     * @return void
+     * {@inheritdoc}
      */
     public function getEnvironmentSetUp($app)
     {
@@ -53,6 +46,9 @@ abstract class TestCase extends Orchestra
             'database' => __DIR__.'/database.sqlite',
             'prefix'   => '',
         ]);
+        $app['config']->set(
+            'cache.driver', getenv('CACHE_DRIVER') ?: env('CACHE_DRIVER', 'array')
+        );
         $app['config']->set('auth.providers.users.model', User::class);
         $app['config']->set('auth.providers.posts.model', Post::class);
         $app['config']->set('auth.providers.kids.model', Kid::class);
@@ -79,5 +75,29 @@ abstract class TestCase extends Orchestra
     protected function clearCache()
     {
         $this->artisan('cache:clear');
+    }
+
+    /**
+     * Get the cache with tags, if the driver supports it.
+     *
+     * @param  string  $key
+     * @param  array|null  $tags
+     * @return mixed
+     */
+    protected function getCacheWithTags(string $key, $tags = null)
+    {
+        return $this->driverSupportsTags()
+            ? Cache::tags($tags)->get($key)
+            : Cache::get($key);
+    }
+
+    /**
+     * Check if the current driver supports tags.
+     *
+     * @return bool
+     */
+    protected function driverSupportsTags(): bool
+    {
+        return ! in_array(config('cache.driver'), ['file', 'database']);
     }
 }
