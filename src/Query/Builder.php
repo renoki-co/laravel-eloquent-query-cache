@@ -15,11 +15,9 @@ class Builder extends BaseBuilder implements QueryCacheModuleInterface
      */
     public function get($columns = ['*'])
     {
-        if (! $this->shouldAvoidCache()) {
-            return $this->getFromQueryCache('get', $columns);
-        }
-
-        return parent::get($columns);
+        return $this->shouldAvoidCache()
+            ? parent::get($columns)
+            : $this->getFromQueryCache('get', $columns);
     }
 
     /**

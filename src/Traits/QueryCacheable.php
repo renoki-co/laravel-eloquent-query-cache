@@ -57,11 +57,9 @@ trait QueryCacheable
             $connection->getPostProcessor()
         );
 
-        if ($this->cacheFor) {
-            $builder->cacheFor($this->cacheFor);
-        } else {
-            $builder->dontCache();
-        }
+        $this->cacheFor
+            ? $builder->cacheFor($this->cacheFor)
+            : $builder->dontCache();
 
         if ($this->cacheTags) {
             $builder->cacheTags($this->cacheTags);
@@ -79,8 +77,7 @@ trait QueryCacheable
             $builder->withPlainKey();
         }
 
-        return $builder
-            ->cacheBaseTags($this->getCacheBaseTags());
+        return $builder->cacheBaseTags($this->getCacheBaseTags());
     }
 
     /**
