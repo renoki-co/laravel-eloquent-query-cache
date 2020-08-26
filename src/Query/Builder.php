@@ -33,4 +33,22 @@ class Builder extends BaseBuilder implements QueryCacheModuleInterface
 
         return $this;
     }
+
+    /**
+     * Add a subselect expression to the query.
+     *
+     * @param  \Closure|$this|string  $query
+     * @param  string  $as
+     * @return $this
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function selectSub($query, $as)
+    {
+        if(get_class($query) == self::class) {
+            $this->appendCacheTags($query->getCacheTags() ?? []);
+        }
+
+        return parent::selectSub($query, $as);
+    }
 }
