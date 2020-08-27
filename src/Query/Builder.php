@@ -45,7 +45,7 @@ class Builder extends BaseBuilder implements QueryCacheModuleInterface
      */
     public function selectSub($query, $as)
     {
-        if(get_class($query) == self::class) {
+        if (get_class($query) == self::class) {
             $this->appendCacheTags($query->getCacheTags() ?? []);
         }
 
