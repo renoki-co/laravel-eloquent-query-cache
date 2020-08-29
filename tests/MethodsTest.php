@@ -6,6 +6,7 @@ use Cache;
 use Rennokki\QueryCache\Test\Models\Book;
 use Rennokki\QueryCache\Test\Models\Kid;
 use Rennokki\QueryCache\Test\Models\Post;
+use Rennokki\QueryCache\Test\Models\User;
 
 class MethodsTest extends TestCase
 {
@@ -122,5 +123,51 @@ class MethodsTest extends TestCase
         $cache = Cache::get('leqc:156667fa9bcb7fb8abb01018568648406f251ef65736e89e6fd27d08bc48b5bb');
 
         $this->assertNotNull($cache);
+    }
+
+    public function test_append_cache_tags()
+    {
+        $post = factory(Post::class)->create();
+        $storedPost = Post::cacheFor(now()->addHours(1))->appendCacheTags(['test'])->first();
+
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
+
+        // The caches that do not support tagging should
+        // cache the query either way.
+        $this->driverSupportsTags()
+            ? $this->assertNull($cache)
+            : $this->assertNotNull($cache);
+
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
+        $this->assertNotNull($cache);
+    }
+
+    public function test_multiple_append_cache_tags()
+    {
+        $post = factory(Post::class)->create();
+        $storedPostQuery = Post::cacheFor(now()->addHours(1))->appendCacheTags(['test'])->appendCacheTags(['test2']);
+
+        $this->assertEquals($storedPostQuery->getQuery()->getCacheTags(), ['test', 'test2']);
+    }
+
+    public function test_append_cache_tags_with_sub_query()
+    {
+        $user = factory(User::class)->create();
+        factory(Post::class)->createMany([
+            ['user_id' => $user->id, 'name' => 'Post 1 on topic 1'],
+            ['user_id' => $user->id, 'name' => 'Post 2 on topic 1'],
+            ['user_id' => $user->id, 'name' => 'Post 3 on topic 2'],
+        ]);
+
+        $userAndPosts = User::cacheFor(now()->addHours(1))
+            ->withCount([
+                'posts' => function ($query) {
+                    $query->appendCacheTags(['posts'])
+                        ->where('name', 'like', '%topic 1%');
+                },
+            ])
+            ->appendCacheTags(['user']);
+
+        $this->assertEquals($userAndPosts->getQuery()->getCacheTags(), ['posts', 'user']);
     }
 }

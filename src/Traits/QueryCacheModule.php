@@ -273,6 +273,19 @@ trait QueryCacheModule
     }
 
     /**
+     * Append tags to the cache.
+     *
+     * @param  array  $cacheTags
+     * @return \Rennokki\QueryCache\Query\Builder
+     */
+    public function appendCacheTags(array $cacheTags = [])
+    {
+        $this->cacheTags = array_unique(array_merge($this->cacheTags ?? [], $cacheTags));
+
+        return $this;
+    }
+
+    /**
      * Use a specific cache driver.
      *
      * @param  string  $cacheDriver

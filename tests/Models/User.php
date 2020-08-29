@@ -3,9 +3,12 @@
 namespace Rennokki\QueryCache\Test\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Rennokki\QueryCache\Traits\QueryCacheable;
 
 class User extends Authenticatable
 {
+    use QueryCacheable;
+
     protected $fillable = [
         'name', 'email', 'password',
     ];
@@ -19,5 +22,10 @@ class User extends Authenticatable
         return [
             //
         ];
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
     }
 }
