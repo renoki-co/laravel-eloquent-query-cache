@@ -57,7 +57,7 @@ trait QueryCacheable
             $connection->getPostProcessor()
         );
 
-        $this->cacheFor
+        $this->cacheFor || env('CACHE_FOR')
             ? $builder->cacheFor($this->cacheFor)
             : $builder->dontCache();
 
