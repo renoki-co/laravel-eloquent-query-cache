@@ -336,7 +336,7 @@ CustomModel::cacheFor(30)->customGetMethod();
 This is how the default key generation function looks like:
 
 ```php
-public function generatePlainCacheKey(string $method = 'get', $id = null, $appends = null): string
+public function generatePlainCacheKey(string $method = 'get', string $id = null, string $appends = null): string
 {
     $name = $this->connection->getName();
 
@@ -359,7 +359,7 @@ class MyCustomBuilder implements QueryCacheModuleInterface
 {
     use QueryCacheModule;
 
-    public function generatePlainCacheKey(string $method = 'get', $id = null, $appends = null): string
+    public function generatePlainCacheKey(string $method = 'get', string $id = null, string $appends = null): string
     {
         $name = $this->connection->getName();
 
@@ -374,12 +374,14 @@ class MyCustomBuilder implements QueryCacheModuleInterface
 Since all of the Laravel Eloquent functions are based on it, the builder that comes with this package replaces only the `get()` one:
 
 ```php
+use Illuminate\Support\Arr;
+
 class Builder
 {
     public function get($columns = ['*'])
     {
         if (! $this->shouldAvoidCache()) {
-            return $this->getFromQueryCache('get', $columns);
+            return $this->getFromQueryCache('get', Arr::wrap($columns));
         }
 
         return parent::get($columns);
@@ -413,9 +415,11 @@ The default behaviour of the package doesn't use it, since the query builder use
 However, if your builder replaces functions  like `find()`, `$id` is needed and you will also have to replace the `getQueryCacheCallback()` like so:
 
 ```php
+use Illuminate\Support\Arr;
+
 class MyCustomBuilder
 {
-    public function getQueryCacheCallback(string $method = 'get', $columns = ['*'], $id = null)
+    public function getQueryCacheCallback(string $method = 'get', $columns = ['*'], string $id = null)
     {
         return function () use ($method, $columns, $id) {
             $this->avoidCache = true;
@@ -434,7 +438,7 @@ class MyCustomBuilder
     {
         // implementing the same logic
         if (! $this->shouldAvoidCache()) {
-            return $this->getFromQueryCache('find', $columns, $id);
+            return $this->getFromQueryCache('find', Arr::wrap($columns), $id);
         }
 
         return parent::find($id, $columns);
