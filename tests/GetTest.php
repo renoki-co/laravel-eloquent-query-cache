@@ -44,4 +44,23 @@ class GetTest extends TestCase
             $post->name
         );
     }
+
+    public function test_get_with_string_columns()
+    {
+        $post = factory(Post::class)->create();
+        $storedPosts = Post::cacheFor(now()->addHours(1))->get('name');
+        $cache = Cache::get('leqc:sqlitegetselect "name" from "posts"a:0:{}');
+
+        $this->assertNotNull($cache);
+
+        $this->assertEquals(
+            $cache->first()->name,
+            $storedPosts->first()->name
+        );
+
+        $this->assertEquals(
+            $cache->first()->name,
+            $post->name
+        );
+    }
 }

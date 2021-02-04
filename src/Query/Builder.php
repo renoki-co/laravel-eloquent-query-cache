@@ -3,6 +3,7 @@
 namespace Rennokki\QueryCache\Query;
 
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Support\Arr;
 use Rennokki\QueryCache\Contracts\QueryCacheModuleInterface;
 use Rennokki\QueryCache\Traits\QueryCacheModule;
 
@@ -17,7 +18,7 @@ class Builder extends BaseBuilder implements QueryCacheModuleInterface
     {
         return $this->shouldAvoidCache()
             ? parent::get($columns)
-            : $this->getFromQueryCache('get', $columns);
+            : $this->getFromQueryCache('get', Arr::wrap($columns));
     }
 
     /**
