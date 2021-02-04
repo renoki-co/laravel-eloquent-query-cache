@@ -336,7 +336,7 @@ CustomModel::cacheFor(30)->customGetMethod();
 This is how the default key generation function looks like:
 
 ```php
-public function generatePlainCacheKey(string $method = 'get', $id = null, $appends = null): string
+public function generatePlainCacheKey(string $method = 'get', string $id = null, string $appends = null): string
 {
     $name = $this->connection->getName();
 
@@ -359,7 +359,7 @@ class MyCustomBuilder implements QueryCacheModuleInterface
 {
     use QueryCacheModule;
 
-    public function generatePlainCacheKey(string $method = 'get', $id = null, $appends = null): string
+    public function generatePlainCacheKey(string $method = 'get', string $id = null, string $appends = null): string
     {
         $name = $this->connection->getName();
 
@@ -415,7 +415,7 @@ However, if your builder replaces functions  like `find()`, `$id` is needed and 
 ```php
 class MyCustomBuilder
 {
-    public function getQueryCacheCallback(string $method = 'get', $columns = ['*'], $id = null)
+    public function getQueryCacheCallback(string $method = 'get', $columns = ['*'], string $id = null)
     {
         return function () use ($method, $columns, $id) {
             $this->avoidCache = true;
