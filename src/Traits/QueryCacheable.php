@@ -5,6 +5,10 @@ namespace Rennokki\QueryCache\Traits;
 use Rennokki\QueryCache\FlushQueryCacheObserver;
 use Rennokki\QueryCache\Query\Builder;
 
+/**
+ * @method static bool flushQueryCache(string[] $array = [])
+ * @method static bool flushQueryCacheWithTag(string $string)
+ */
 trait QueryCacheable
 {
     /**
