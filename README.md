@@ -22,7 +22,7 @@ _Kind words will touch our chakras and vibe, while the sponsorships will keep th
 
 [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/R6R42U8CL)
 
-## Documentation
+## 📃 Documentation
 
 [The entire documentation is available on Gitbook 🌍](https://rennokki.gitbook.io/laravel-eloquent-query-cache/)
 
