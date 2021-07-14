@@ -251,11 +251,16 @@ trait QueryCacheModule
      * Set the cache prefix.
      *
      * @param  string  $prefix
+     * @param  bool  $increment
      * @return \Rennokki\QueryCache\Query\Builder
      */
-    public function cachePrefix(string $prefix)
+    public function cachePrefix(string $prefix, bool $increment = false)
     {
-        $this->cachePrefix = $prefix;
+        if ($increment) {
+            $this->cachePrefix .= $prefix;
+        } else {
+            $this->cachePrefix = $prefix;
+        }
 
         return $this;
     }

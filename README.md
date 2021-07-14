@@ -249,6 +249,21 @@ $bob = Kid::whereName('Bob')
 
 If no prefix is specified, the string `leqc` is going to be used.
 
+You can also set the second ``cachePrefix`` parameter as `` bool`` to increment the ``prefix`` defined in the Model:
+
+```php
+// in model
+public $cachePrefix = 'books_';
+
+// using
+$bob = Kid::whereName('Bob')
+    ->cacheFor(60)
+    ->cachePrefix('to_read', true)
+    ->first();
+```
+
+This way the generated prefix will be: ``books_to_read``
+
 ## Cache Drivers
 
 By default, the trait uses the default cache driver. If you want to **force** a specific one, you can do so by calling `cacheDriver()`:
