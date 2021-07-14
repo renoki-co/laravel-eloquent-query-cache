@@ -241,7 +241,7 @@ trait QueryCacheModule
     /**
      * Alias for dontCache().
      *
-     * @param bool $avoidCache
+     * @param  bool  $avoidCache
      * @return \Illuminate\Database\Query\Builder|static
      */
     public function doNotCache(bool $avoidCache = true)
