@@ -228,11 +228,12 @@ trait QueryCacheModule
     /**
      * Indicate that the query should not be cached.
      *
+     * @param  bool  $avoidCache
      * @return \Illuminate\Database\Query\Builder|static
      */
-    public function dontCache()
+    public function dontCache(bool $avoidCache = true)
     {
-        $this->avoidCache = true;
+        $this->avoidCache = $avoidCache;
 
         return $this;
     }
@@ -240,11 +241,12 @@ trait QueryCacheModule
     /**
      * Alias for dontCache().
      *
+     * @param  bool  $avoidCache
      * @return \Illuminate\Database\Query\Builder|static
      */
-    public function doNotCache()
+    public function doNotCache(bool $avoidCache = true)
     {
-        return $this->dontCache();
+        return $this->dontCache($avoidCache);
     }
 
     /**
