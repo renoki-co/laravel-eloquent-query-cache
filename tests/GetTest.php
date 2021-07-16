@@ -2,7 +2,7 @@
 
 namespace Rennokki\QueryCache\Test;
 
-use Cache;
+use Illuminate\Support\Facades\Cache;
 use Rennokki\QueryCache\Test\Models\Post;
 
 class GetTest extends TestCase

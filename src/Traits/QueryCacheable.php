@@ -15,6 +15,28 @@ use Rennokki\QueryCache\Query\Builder;
 trait QueryCacheable
 {
     /**
+     * Invalidate the cache automatically
+     * upon update in the database.
+     *
+     * @var bool
+     */
+    protected static $flushCacheOnUpdate = false;
+
+    /**
+     * Boot the trait.
+     *
+     * @return void
+     */
+    public static function bootQueryCacheable()
+    {
+        if (isset(static::$flushCacheOnUpdate) && static::$flushCacheOnUpdate) {
+            static::observe(
+                static::getFlushQueryCacheObserver()
+            );
+        }
+    }
+
+    /**
      * Get the observer class name that will
      * observe the changes and will invalidate the cache
      * upon database change.
@@ -38,20 +60,6 @@ trait QueryCacheable
     }
 
     /**
-     * Boot the trait.
-     *
-     * @return void
-     */
-    public static function bootQueryCacheable()
-    {
-        if (isset(static::$flushCacheOnUpdate) && static::$flushCacheOnUpdate) {
-            static::observe(
-                static::getFlushQueryCacheObserver()
-            );
-        }
-    }
-
-    /**
      * {@inheritdoc}
      */
     protected function newBaseQueryBuilder()
@@ -64,9 +72,11 @@ trait QueryCacheable
             $connection->getPostProcessor()
         );
 
-        $this->cacheFor
-            ? $builder->cacheFor($this->cacheFor)
-            : $builder->dontCache();
+        $builder->dontCache();
+
+        if ($this->cacheFor) {
+            $builder->cacheFor($this->cacheFor);
+        }
 
         if ($this->cacheTags) {
             $builder->cacheTags($this->cacheTags);

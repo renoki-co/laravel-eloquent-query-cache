@@ -205,7 +205,7 @@ trait QueryCacheModule
      * Indicate that the query results should be cached.
      *
      * @param  \DateTime|int  $time
-     * @return \Rennokki\QueryCache\Query\Builder
+     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
      */
     public function cacheFor($time)
     {
@@ -253,7 +253,7 @@ trait QueryCacheModule
      * Set the cache prefix.
      *
      * @param  string  $prefix
-     * @return \Rennokki\QueryCache\Query\Builder
+     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
      */
     public function cachePrefix(string $prefix)
     {
@@ -266,7 +266,7 @@ trait QueryCacheModule
      * Attach tags to the cache.
      *
      * @param  array  $cacheTags
-     * @return \Rennokki\QueryCache\Query\Builder
+     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
      */
     public function cacheTags(array $cacheTags = [])
     {
@@ -279,7 +279,7 @@ trait QueryCacheModule
      * Append tags to the cache.
      *
      * @param  array  $cacheTags
-     * @return \Rennokki\QueryCache\Query\Builder
+     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
      */
     public function appendCacheTags(array $cacheTags = [])
     {
@@ -292,7 +292,7 @@ trait QueryCacheModule
      * Use a specific cache driver.
      *
      * @param  string  $cacheDriver
-     * @return \Rennokki\QueryCache\Query\Builder
+     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
      */
     public function cacheDriver(string $cacheDriver)
     {
@@ -306,7 +306,7 @@ trait QueryCacheModule
      * that will be present on all cached queries.
      *
      * @param  array  $tags
-     * @return \Rennokki\QueryCache\Query\Builder
+     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
      */
     public function cacheBaseTags(array $tags = [])
     {
@@ -318,7 +318,7 @@ trait QueryCacheModule
     /**
      * Use a plain key instead of a hashed one in the cache driver.
      *
-     * @return \Rennokki\QueryCache\Query\Builder
+     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
      */
     public function withPlainKey()
     {

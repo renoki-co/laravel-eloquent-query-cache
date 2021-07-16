@@ -2,7 +2,7 @@
 
 namespace Rennokki\QueryCache\Test;
 
-use Cache;
+use Illuminate\Support\Facades\Cache;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
