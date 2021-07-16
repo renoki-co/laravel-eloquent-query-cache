@@ -6,6 +6,8 @@ use Rennokki\QueryCache\FlushQueryCacheObserver;
 use Rennokki\QueryCache\Query\Builder;
 
 /**
+ * @method static bool flushQueryCache(string[] $array = [])
+ * @method static bool flushQueryCacheWithTag(string $string)
  * @method static \Illuminate\Database\Query\Builder|static cacheForever()
  * @method static \Illuminate\Database\Query\Builder|static dontCache()
  * @method static \Illuminate\Database\Query\Builder|static doNotCache()
