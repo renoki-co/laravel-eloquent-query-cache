@@ -15,14 +15,6 @@ use Rennokki\QueryCache\Query\Builder;
 trait QueryCacheable
 {
     /**
-     * Invalidate the cache automatically
-     * upon update in the database.
-     *
-     * @var bool
-     */
-    protected static $flushCacheOnUpdate = false;
-
-    /**
      * Boot the trait.
      *
      * @return void
