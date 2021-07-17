@@ -178,7 +178,7 @@ trait QueryCacheModule
         }
 
         foreach ($tags as $tag) {
-            self::flushQueryCacheWithTag($tag);
+            $this->flushQueryCacheWithTag($tag);
         }
 
         return true;
