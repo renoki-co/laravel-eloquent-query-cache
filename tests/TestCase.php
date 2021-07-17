@@ -64,7 +64,7 @@ abstract class TestCase extends Orchestra
      */
     protected function resetDatabase()
     {
-        file_put_contents(__DIR__.'/database.sqlite', null);
+        file_put_contents(__DIR__.'/database/database.sqlite', null);
     }
 
     /**
