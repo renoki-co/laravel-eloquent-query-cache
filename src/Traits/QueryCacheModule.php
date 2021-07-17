@@ -318,11 +318,12 @@ trait QueryCacheModule
     /**
      * Use a plain key instead of a hashed one in the cache driver.
      *
+     * @param  bool  $usePlainKey
      * @return \Rennokki\QueryCache\Traits\QueryCacheModule
      */
-    public function withPlainKey()
+    public function withPlainKey(bool $usePlainKey = true)
     {
-        $this->cacheUsePlainKey = true;
+        $this->cacheUsePlainKey = $usePlainKey;
 
         return $this;
     }

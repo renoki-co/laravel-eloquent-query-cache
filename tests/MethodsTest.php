@@ -119,7 +119,7 @@ class MethodsTest extends TestCase
     public function test_hashed_key()
     {
         $kid = factory(Kid::class)->create();
-        $storedKid = Kid::cacheFor(now()->addHours(1))->first();
+        $storedKid = Kid::cacheFor(now()->addHours(1))->withPlainKey(false)->first();
         $cache = Cache::get('leqc:156667fa9bcb7fb8abb01018568648406f251ef65736e89e6fd27d08bc48b5bb');
 
         $this->assertNotNull($cache);

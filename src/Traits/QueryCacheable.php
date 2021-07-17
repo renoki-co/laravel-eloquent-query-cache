@@ -8,9 +8,15 @@ use Rennokki\QueryCache\Query\Builder;
 /**
  * @method static bool flushQueryCache(string[] $array = [])
  * @method static bool flushQueryCacheWithTag(string $string)
+ * @method static \Illuminate\Database\Query\Builder|static cacheFor()
  * @method static \Illuminate\Database\Query\Builder|static cacheForever()
  * @method static \Illuminate\Database\Query\Builder|static dontCache()
  * @method static \Illuminate\Database\Query\Builder|static doNotCache()
+ * @method static \Illuminate\Database\Query\Builder|static cachePrefix()
+ * @method static \Illuminate\Database\Query\Builder|static cacheTags()
+ * @method static \Illuminate\Database\Query\Builder|static appendCacheTags()
+ * @method static \Illuminate\Database\Query\Builder|static cacheDriver()
+ * @method static \Illuminate\Database\Query\Builder|static cacheBaseTags()
  */
 trait QueryCacheable
 {
@@ -44,9 +50,11 @@ trait QueryCacheable
      * When invalidating automatically on update, you can specify
      * which tags to invalidate.
      *
+     * @param  string|null  $relation
+     * @param  \Illuminate\Database\Eloquent\Collection|null  $pivotedModels
      * @return array
      */
-    public function getCacheTagsToInvalidateOnUpdate(): array
+    public function getCacheTagsToInvalidateOnUpdate($relation = null, $pivotedModels = null): array
     {
         return $this->getCacheBaseTags();
     }
