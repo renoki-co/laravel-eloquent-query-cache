@@ -47,6 +47,19 @@ trait QueryCacheable
     }
 
     /**
+     * Set the base cache tags that will be present
+     * on all queries.
+     *
+     * @return array
+     */
+    protected function getCacheBaseTags(): array
+    {
+        return [
+            (string) self::class,
+        ];
+    }
+
+    /**
      * When invalidating automatically on update, you can specify
      * which tags to invalidate.
      *
@@ -95,18 +108,5 @@ trait QueryCacheable
         }
 
         return $builder->cacheBaseTags($this->getCacheBaseTags());
-    }
-
-    /**
-     * Set the base cache tags that will be present
-     * on all queries.
-     *
-     * @return array
-     */
-    protected function getCacheBaseTags(): array
-    {
-        return [
-            (string) self::class,
-        ];
     }
 }

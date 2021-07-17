@@ -153,6 +153,7 @@ class MethodsTest extends TestCase
     public function test_append_cache_tags_with_sub_query()
     {
         $user = factory(User::class)->create();
+
         factory(Post::class)->createMany([
             ['user_id' => $user->id, 'name' => 'Post 1 on topic 1'],
             ['user_id' => $user->id, 'name' => 'Post 2 on topic 1'],
