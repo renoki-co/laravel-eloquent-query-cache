@@ -60,7 +60,7 @@ jobs:
         CACHE_DRIVER=array vendor/bin/phpunit --coverage-text --coverage-clover=coverage_array.xml
         CACHE_DRIVER=file vendor/bin/phpunit --coverage-text --coverage-clover=coverage_file.xml
 
-    - uses: codecov/codecov-action@v2.0.2
+    - uses: codecov/codecov-action@v2.0.3
       with:
         fail_ci_if_error: false
         file: '*.xml'
