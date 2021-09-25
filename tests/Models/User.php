@@ -32,6 +32,16 @@ class User extends Authenticatable
         ];
     }
 
+    protected function cacheUsePlainKeyValue()
+    {
+        return $this->cacheUsePlainKey;
+    }
+
+    protected function cacheForValue()
+    {
+        return 3600;
+    }
+
     public function getCacheTagsToInvalidateOnUpdate($relation = null, $pivotedModels = null): array
     {
         if ($relation === 'roles') {

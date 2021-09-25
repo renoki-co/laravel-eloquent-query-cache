@@ -21,4 +21,14 @@ class Post extends Model
             //
         ];
     }
+
+    protected function cacheUsePlainKeyValue()
+    {
+        return $this->cacheUsePlainKey;
+    }
+
+    protected function cacheForValue()
+    {
+        return 3600;
+    }
 }
