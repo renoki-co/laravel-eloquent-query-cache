@@ -147,6 +147,7 @@ class FlushQueryCacheObserver
      * @param  string|null  $relation
      * @param  \Illuminate\Database\Eloquent\Collection|null  $pivotedModels
      * @return void
+     *
      * @throws Exception
      */
     protected function invalidateCache(Model $model, $relation = null, $pivotedModels = null): void
