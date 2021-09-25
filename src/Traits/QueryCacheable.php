@@ -91,20 +91,40 @@ trait QueryCacheable
             $builder->cacheFor($this->cacheFor);
         }
 
+        if (method_exists($this, 'cacheForValue')) {
+            $builder->cacheFor($this->cacheForValue($builder));
+        }
+
         if ($this->cacheTags) {
             $builder->cacheTags($this->cacheTags);
+        }
+
+        if (method_exists($this, 'cacheTagsValue')) {
+            $builder->cacheTags($this->cacheTagsValue($builder));
         }
 
         if ($this->cachePrefix) {
             $builder->cachePrefix($this->cachePrefix);
         }
 
+        if (method_exists($this, 'cachePrefixValue')) {
+            $builder->cachePrefix($this->cachePrefixValue($builder));
+        }
+
         if ($this->cacheDriver) {
             $builder->cacheDriver($this->cacheDriver);
         }
 
+        if (method_exists($this, 'cacheDriverValue')) {
+            $builder->cacheDriver($this->cacheDriverValue($builder));
+        }
+
         if ($this->cacheUsePlainKey) {
             $builder->withPlainKey();
+        }
+
+        if (method_exists($this, 'cacheUsePlainKeyValue')) {
+            $builder->withPlainKey($this->cacheUsePlainKeyValue($builder));
         }
 
         return $builder->cacheBaseTags($this->getCacheBaseTags());
