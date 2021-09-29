@@ -75,7 +75,7 @@ trait QueryCacheModule
             $this->columns = $columns;
         }
 
-        $key = $this->getCacheKey('get');
+        $key = $this->getCacheKey($method);
         $cache = $this->getCache();
         $callback = $this->getQueryCacheCallback($method, $columns, $id);
         $time = $this->getCacheTime();
