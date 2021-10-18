@@ -14,9 +14,9 @@ It adds caching functionalities directly on the Eloquent level, making use of ca
 
 ## 🤝 Supporting
 
-If you are using one or more Renoki Co. open-source packages in your production apps, in presentation demos, hobby projects, school projects or so, spread some kind words about our work or sponsor our work via Patreon. 📦
+[<img src="https://github-content.s3.fr-par.scw.cloud/static/37.jpg" height="210" width="418" />](https://github-content.renoki.org/github-repo/37)
 
-You will sometimes get exclusive content on tips about Laravel, AWS or Kubernetes on Patreon and some early-access to projects or packages.
+If you are using one or more Renoki Co. open-source packages in your production apps, in presentation demos, hobby projects, school projects or so, spread some kind words about our work or sponsor our work via Patreon. 📦
 
 [<img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" height="41" width="175" />](https://www.patreon.com/bePatron?u=10965171)
 
