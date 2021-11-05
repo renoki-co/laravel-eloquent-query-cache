@@ -204,13 +204,13 @@ trait QueryCacheModule
     /**
      * Indicate that the query results should be cached.
      *
-     * @param  \DateTime|int  $time
+     * @param  \DateTime|int|null  $time
      * @return \Rennokki\QueryCache\Traits\QueryCacheModule
      */
     public function cacheFor($time)
     {
         $this->cacheTime = $time;
-        $this->avoidCache = false;
+        $this->avoidCache = $time === null;
 
         return $this;
     }
