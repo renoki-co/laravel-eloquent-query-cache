@@ -13,7 +13,7 @@ trait QueryCacheModule
      *
      * @var int|\DateTime
      */
-    protected $cacheTime;
+    protected $cacheFor;
 
     /**
      * The tags for the query cache. Can be useful
@@ -78,7 +78,7 @@ trait QueryCacheModule
         $key = $this->getCacheKey($method);
         $cache = $this->getCache();
         $callback = $this->getQueryCacheCallback($method, $columns, $id);
-        $time = $this->getCacheTime();
+        $time = $this->getCacheFor();
 
         if ($time instanceof DateTime || $time > 0) {
             return $cache->remember($key, $time, $callback);
@@ -209,7 +209,7 @@ trait QueryCacheModule
      */
     public function cacheFor($time)
     {
-        $this->cacheTime = $time;
+        $this->cacheFor = $time;
         $this->avoidCache = $time === null;
 
         return $this;
@@ -385,9 +385,9 @@ trait QueryCacheModule
      *
      * @return int|\DateTime
      */
-    public function getCacheTime()
+    public function getCacheFor()
     {
-        return $this->cacheTime;
+        return $this->cacheFor;
     }
 
     /**
