@@ -34,7 +34,7 @@
         "laravel/legacy-factories": "^1.1",
         "mockery/mockery": "^1.4",
         "orchestra/database": "^5.0|^6.0",
-        "orchestra/testbench": "^6.23.2"
+        "orchestra/testbench": "^6.24.0"
     },
     "config": {
         "sort-packages": true
