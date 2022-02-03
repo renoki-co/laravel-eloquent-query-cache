@@ -27,6 +27,8 @@ jobs:
           - 'prefer-lowest'
           - 'prefer-stable'
         include:
+          - laravel: 9.*
+            testbench: 7.*
           - laravel: '7.*'
             testbench: '5.*'
           - laravel: '8.*'
