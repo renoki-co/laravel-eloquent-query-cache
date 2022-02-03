@@ -154,12 +154,12 @@ class FlushQueryCacheObserver
     {
         $class = get_class($model);
 
-        if (! $model->getCacheTagsToInvalidateOnUpdate($relation, $pivotedModels)) {
+        $tags = $model->getCacheTagsToInvalidateOnUpdate($relation, $pivotedModels);
+
+        if (! $tags) {
             throw new Exception('Automatic invalidation for '.$class.' works only if at least one tag to be invalidated is specified.');
         }
 
-        $class::flushQueryCache(
-            $model->getCacheTagsToInvalidateOnUpdate($relation, $pivotedModels)
-        );
+        $class::flushQueryCache($tags);
     }
 }
