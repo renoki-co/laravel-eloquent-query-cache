@@ -40,8 +40,9 @@
         "chelout/laravel-relationship-events": "^1.4",
         "laravel/legacy-factories": "^1.3",
         "mockery/mockery": "^1.5",
-        "orchestra/database": "^5.0|^6.0",
-        "orchestra/testbench": "^6.24.0|^7.0"
+        "orchestra/database": "^6.0",
+        "orchestra/testbench": "^7.0",
+        "phpunit/phpunit": "^9.0"
     },
     "config": {
         "sort-packages": true
