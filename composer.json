@@ -43,7 +43,7 @@
         "orchestra/database": "^6.28|^7.0",
         "orchestra/testbench": "^6.28|^7.0",
         "orchestra/testbench-core": "^6.28|^7.0",
-        "phpunit/phpunit": "^9.5.13"
+        "phpunit/phpunit": "^9.5.20"
     },
     "config": {
         "sort-packages": true
