@@ -10,7 +10,7 @@ class FirstTest extends TestCase
     public function test_first()
     {
         $post = factory(Post::class)->create();
-        $storedPost = Post::cacheFor(now()->addHours(1))->first();
+        $storedPost = Post::cacheQuery(now()->addHours(1))->first();
         $cache = Cache::get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
 
         $this->assertNotNull($cache);
@@ -24,7 +24,7 @@ class FirstTest extends TestCase
     public function test_first_with_columns()
     {
         $post = factory(Post::class)->create();
-        $storedPost = Post::cacheFor(now()->addHours(1))->first(['name']);
+        $storedPost = Post::cacheQuery(now()->addHours(1))->first(['name']);
         $cache = Cache::get('leqc:sqlitegetselect "name" from "posts" limit 1a:0:{}');
 
         $this->assertNotNull($cache);

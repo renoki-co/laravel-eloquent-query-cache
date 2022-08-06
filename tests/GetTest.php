@@ -10,7 +10,7 @@ class GetTest extends TestCase
     public function test_get()
     {
         $post = factory(Post::class)->create();
-        $storedPosts = Post::cacheFor(now()->addHours(1))->get();
+        $storedPosts = Post::cacheQuery(now()->addHours(1))->get();
         $cache = Cache::get('leqc:sqlitegetselect * from "posts"a:0:{}');
 
         $this->assertNotNull($cache);
@@ -29,7 +29,7 @@ class GetTest extends TestCase
     public function test_get_with_columns()
     {
         $post = factory(Post::class)->create();
-        $storedPosts = Post::cacheFor(now()->addHours(1))->get(['name']);
+        $storedPosts = Post::cacheQuery(now()->addHours(1))->get(['name']);
         $cache = Cache::get('leqc:sqlitegetselect "name" from "posts"a:0:{}');
 
         $this->assertNotNull($cache);
@@ -48,7 +48,7 @@ class GetTest extends TestCase
     public function test_get_with_string_columns()
     {
         $post = factory(Post::class)->create();
-        $storedPosts = Post::cacheFor(now()->addHours(1))->get('name');
+        $storedPosts = Post::cacheQuery(now()->addHours(1))->get('name');
         $cache = Cache::get('leqc:sqlitegetselect "name" from "posts"a:0:{}');
 
         $this->assertNotNull($cache);

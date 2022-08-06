@@ -329,6 +329,17 @@ trait QueryCacheModule
     }
 
     /**
+     * Alias for withPlainKey().
+     *
+     * @param  bool  $usePlainKey
+     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
+     */
+    public function cacheUsePlainKey(bool $usePlainKey = true)
+    {
+        return $this->withPlainKey($usePlainKey);
+    }
+
+    /**
      * Get the cache driver.
      *
      * @return \Illuminate\Cache\CacheManager

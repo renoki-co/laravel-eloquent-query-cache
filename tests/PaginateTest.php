@@ -10,7 +10,7 @@ class PaginateTest extends TestCase
     public function test_paginate()
     {
         $posts = factory(Post::class, 30)->create();
-        $storedPosts = Post::cacheFor(now()->addHours(1))->paginate(15);
+        $storedPosts = Post::cacheQuery(now()->addHours(1))->paginate(15);
         $postsCount = $posts->count();
 
         $totalCountCache = Cache::get('leqc:sqlitegetselect count(*) as aggregate from "posts"a:0:{}');
@@ -31,7 +31,7 @@ class PaginateTest extends TestCase
     public function test_paginate_with_columns()
     {
         $posts = factory(Post::class, 30)->create();
-        $storedPosts = Post::cacheFor(now()->addHours(1))->paginate(15, ['name']);
+        $storedPosts = Post::cacheQuery(now()->addHours(1))->paginate(15, ['name']);
         $postsCount = $posts->count();
 
         $totalCountCache = Cache::get('leqc:sqlitegetselect count(*) as aggregate from "posts"a:0:{}');

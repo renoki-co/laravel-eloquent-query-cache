@@ -14,11 +14,11 @@ class MethodsTest extends TestCase
     {
         $post = factory(Post::class)->create();
 
-        $storedPost = Post::cacheFor(now()->addHours(1))->doNotCache()->first();
+        $storedPost = Post::cacheQuery(now()->addHours(1))->doNotCache()->first();
         $cache = Cache::get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
         $this->assertNull($cache);
 
-        $storedPost = Post::cacheFor(now()->addHours(1))->dontCache()->first();
+        $storedPost = Post::cacheQuery(now()->addHours(1))->dontCache()->first();
         $cache = Cache::get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
         $this->assertNull($cache);
     }
@@ -26,7 +26,7 @@ class MethodsTest extends TestCase
     public function test_cache_prefix()
     {
         $post = factory(Post::class)->create();
-        $storedPost = Post::cacheFor(now()->addHours(1))->cachePrefix('test')->first();
+        $storedPost = Post::cacheQuery(now()->addHours(1))->cachePrefix('test')->first();
         $cache = Cache::get('test:sqlitegetselect * from "posts" limit 1a:0:{}');
 
         $this->assertNotNull($cache);
@@ -35,7 +35,7 @@ class MethodsTest extends TestCase
     public function test_cache_tags()
     {
         $post = factory(Post::class)->create();
-        $storedPost = Post::cacheFor(now()->addHours(1))->cacheTags(['test'])->first();
+        $storedPost = Post::cacheQuery(now()->addHours(1))->cacheTags(['test'])->first();
 
         $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
 
@@ -52,7 +52,7 @@ class MethodsTest extends TestCase
     public function test_cache_flush_with_the_right_tag()
     {
         $post = factory(Post::class)->create();
-        $storedPost = Post::cacheFor(now()->addHours(1))->cacheTags(['test'])->first();
+        $storedPost = Post::cacheQuery(now()->addHours(1))->cacheTags(['test'])->first();
 
         $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
         $this->assertNotNull($cache);
@@ -66,7 +66,7 @@ class MethodsTest extends TestCase
     public function test_cache_flush_without_the_right_tag()
     {
         $post = factory(Post::class)->create();
-        $storedPost = Post::cacheFor(now()->addHours(1))->cacheTags(['test'])->first();
+        $storedPost = Post::cacheQuery(now()->addHours(1))->cacheTags(['test'])->first();
 
         $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
         $this->assertNotNull($cache);
@@ -86,7 +86,7 @@ class MethodsTest extends TestCase
     public function test_cache_flush_with_more_tags()
     {
         $post = factory(Post::class)->create();
-        $storedPost = Post::cacheFor(now()->addHours(1))->cacheTags(['test'])->first();
+        $storedPost = Post::cacheQuery(now()->addHours(1))->cacheTags(['test'])->first();
 
         $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
         $this->assertNotNull($cache);
@@ -104,7 +104,7 @@ class MethodsTest extends TestCase
     public function test_cache_flush_with_default_tags_attached()
     {
         $book = factory(Book::class)->create();
-        $storedBook = Book::cacheFor(now()->addHours(1))->cacheTags(['test'])->first();
+        $storedBook = Book::cacheQuery(now()->addHours(1))->cacheTags(['test'])->first();
 
         $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "books" limit 1a:0:{}', ['test', Book::getCacheBaseTags()[0]]);
         $this->assertNotNull($cache);
@@ -119,7 +119,7 @@ class MethodsTest extends TestCase
     public function test_hashed_key()
     {
         $kid = factory(Kid::class)->create();
-        $storedKid = Kid::cacheFor(now()->addHours(1))->withPlainKey(false)->first();
+        $storedKid = Kid::cacheQuery(now()->addHours(1))->withPlainKey(false)->first();
         $cache = Cache::get('leqc:156667fa9bcb7fb8abb01018568648406f251ef65736e89e6fd27d08bc48b5bb');
 
         $this->assertNotNull($cache);
@@ -128,7 +128,7 @@ class MethodsTest extends TestCase
     public function test_append_cache_tags()
     {
         $post = factory(Post::class)->create();
-        $storedPost = Post::cacheFor(now()->addHours(1))->appendCacheTags(['test'])->first();
+        $storedPost = Post::cacheQuery(now()->addHours(1))->appendCacheTags(['test'])->first();
 
         $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
 
@@ -145,7 +145,7 @@ class MethodsTest extends TestCase
     public function test_multiple_append_cache_tags()
     {
         $post = factory(Post::class)->create();
-        $storedPostQuery = Post::cacheFor(now()->addHours(1))->appendCacheTags(['test'])->appendCacheTags(['test2']);
+        $storedPostQuery = Post::cacheQuery(now()->addHours(1))->appendCacheTags(['test'])->appendCacheTags(['test2']);
 
         $this->assertEquals($storedPostQuery->getQuery()->getCacheTags(), ['test', 'test2']);
     }
@@ -160,7 +160,7 @@ class MethodsTest extends TestCase
             ['user_id' => $user->id, 'name' => 'Post 3 on topic 2'],
         ]);
 
-        $userAndPosts = User::cacheFor(now()->addHours(1))
+        $userAndPosts = User::cacheQuery(now()->addHours(1))
             ->withCount([
                 'posts' => function ($query) {
                     $query->appendCacheTags(['posts'])

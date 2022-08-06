@@ -2,6 +2,7 @@
 
 namespace Rennokki\QueryCache\Traits;
 
+use Illuminate\Support\Str;
 use Rennokki\QueryCache\FlushQueryCacheObserver;
 use Rennokki\QueryCache\Query\Builder;
 
@@ -73,11 +74,16 @@ trait QueryCacheable
     }
 
     /**
-     * {@inheritdoc}
+     * Create a new query that is handled through the caching method.
+     *
+     * @param  \DateTime|int|null  $time
+     * @return \Rennokki\QueryCache\Query\Builder
      */
-    protected function newBaseQueryBuilder()
+    protected static function cacheQuery($time)
     {
-        $connection = $this->getConnection();
+        $model = (new static);
+
+        $connection = $model->getConnection();
 
         $builder = new Builder(
             $connection,
@@ -85,48 +91,44 @@ trait QueryCacheable
             $connection->getPostProcessor()
         );
 
-        $builder->dontCache();
+        $builder->cacheFor($time);
 
-        if ($this->cacheFor) {
-            $builder->cacheFor($this->cacheFor);
+        if ($model->cacheFor) {
+            $builder->cacheFor($model->cacheFor);
         }
 
-        if (method_exists($this, 'cacheForValue')) {
-            $builder->cacheFor($this->cacheForValue($builder));
+        if ($model->cacheTags) {
+            $builder->cacheTags($model->cacheTags);
         }
 
-        if ($this->cacheTags) {
-            $builder->cacheTags($this->cacheTags);
+        if ($model->cachePrefix) {
+            $builder->cachePrefix($model->cachePrefix);
         }
 
-        if (method_exists($this, 'cacheTagsValue')) {
-            $builder->cacheTags($this->cacheTagsValue($builder));
+        if ($model->cacheDriver) {
+            $builder->cacheDriver($model->cacheDriver);
         }
 
-        if ($this->cachePrefix) {
-            $builder->cachePrefix($this->cachePrefix);
-        }
-
-        if (method_exists($this, 'cachePrefixValue')) {
-            $builder->cachePrefix($this->cachePrefixValue($builder));
-        }
-
-        if ($this->cacheDriver) {
-            $builder->cacheDriver($this->cacheDriver);
-        }
-
-        if (method_exists($this, 'cacheDriverValue')) {
-            $builder->cacheDriver($this->cacheDriverValue($builder));
-        }
-
-        if ($this->cacheUsePlainKey) {
+        if ($model->cacheUsePlainKey) {
             $builder->withPlainKey();
         }
 
-        if (method_exists($this, 'cacheUsePlainKeyValue')) {
-            $builder->withPlainKey($this->cacheUsePlainKeyValue($builder));
+        $methodsToSeek = [
+            'cacheForValue',
+            'cacheTagsValue',
+            'cachePrefixValue',
+            'cacheDriverValue',
+            'cacheUsePlainKeyValue',
+        ];
+
+        foreach ($methodsToSeek as $method) {
+            if (method_exists($model, $method)) {
+                $builder->{Str::before($method, 'Value')}(
+                    $model->{$method}($builder)
+                );
+            }
         }
 
-        return $builder->cacheBaseTags($this->getCacheBaseTags());
+        return $builder->cacheBaseTags($model->getCacheBaseTags());
     }
 }
