@@ -2,6 +2,7 @@
 
 namespace Rennokki\QueryCache\Test;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -13,6 +14,11 @@ abstract class TestCase extends Orchestra
     public function setUp(): void
     {
         parent::setUp();
+
+        if ($this->getProvidedData()) {
+            [$strict] = $this->getProvidedData();
+            Model::preventAccessingMissingAttributes($strict);
+        }
 
         $this->resetDatabase();
         $this->clearCache();
@@ -89,6 +95,12 @@ abstract class TestCase extends Orchestra
         return $this->driverSupportsTags()
             ? Cache::tags($tags)->get($key)
             : Cache::get($key);
+    }
+
+    public function strictModeContextProvider(): iterable
+    {
+        yield [true];
+        yield [false];
     }
 
     /**

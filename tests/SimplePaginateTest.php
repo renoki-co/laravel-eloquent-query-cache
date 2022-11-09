@@ -2,11 +2,15 @@
 
 namespace Rennokki\QueryCache\Test;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Rennokki\QueryCache\Test\Models\Post;
 
 class SimplePaginateTest extends TestCase
 {
+    /**
+     * @dataProvider strictModeContextProvider
+     */
     public function test_simple_paginate()
     {
         $posts = factory(Post::class, 30)->create();
@@ -26,6 +30,9 @@ class SimplePaginateTest extends TestCase
         );
     }
 
+    /**
+     * @dataProvider strictModeContextProvider
+     */
     public function test_simple_paginate_with_columns()
     {
         $posts = factory(Post::class, 30)->create();
