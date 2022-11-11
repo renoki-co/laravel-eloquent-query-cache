@@ -2,7 +2,6 @@
 
 namespace Rennokki\QueryCache\Test;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Rennokki\QueryCache\Test\Models\Post;
 
