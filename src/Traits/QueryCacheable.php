@@ -9,15 +9,7 @@ use Rennokki\QueryCache\Query\Builder;
 /**
  * @method static bool flushQueryCache(array $tags = [])
  * @method static bool flushQueryCacheWithTag(string $string)
- * @method static \Illuminate\Database\Query\Builder|static cacheFor(\DateTime|int|null $time)
- * @method static \Illuminate\Database\Query\Builder|static cacheForever()
- * @method static \Illuminate\Database\Query\Builder|static dontCache()
- * @method static \Illuminate\Database\Query\Builder|static doNotCache()
- * @method static \Illuminate\Database\Query\Builder|static cachePrefix(string $prefix)
- * @method static \Illuminate\Database\Query\Builder|static cacheTags(array $cacheTags = [])
- * @method static \Illuminate\Database\Query\Builder|static appendCacheTags(array $cacheTags = [])
- * @method static \Illuminate\Database\Query\Builder|static cacheDriver(string $cacheDriver)
- * @method static \Illuminate\Database\Query\Builder|static cacheBaseTags(array $tags = [])
+ * @method static \Illuminate\Database\Query\Builder cacheQuery(\DateTime|int|null $time)
  */
 trait QueryCacheable
 {
@@ -79,19 +71,17 @@ trait QueryCacheable
      * @param  \DateTime|int|null  $time
      * @return \Rennokki\QueryCache\Query\Builder
      */
-    protected static function cacheQuery($time)
+    public static function cacheQuery($time = null)
     {
-        $model = (new static);
-
-        $connection = $model->getConnection();
+        /** @var \Illuminate\Database\Eloquent\Model $this */
+        /** @var \Illuminate\Database\Eloquent\Model $model */
+        $model = new static;
 
         $builder = new Builder(
-            $connection,
-            $connection->getQueryGrammar(),
-            $connection->getPostProcessor()
+            $model->getConnection(),
+            $model->getConnection()->getQueryGrammar(),
+            $model->getConnection()->getPostProcessor(),
         );
-
-        $builder->cacheFor($time);
 
         if ($model->cacheFor) {
             $builder->cacheFor($model->cacheFor);
@@ -113,20 +103,30 @@ trait QueryCacheable
             $builder->withPlainKey();
         }
 
-        $methodsToSeek = [
-            'cacheForValue',
-            'cacheTagsValue',
-            'cachePrefixValue',
-            'cacheDriverValue',
-            'cacheUsePlainKeyValue',
+        $attributesToSeek = [
+            'cacheFor',
+            'cacheTags',
+            'cachePrefix',
+            'cacheDriver',
+            'cacheUsePlainKey',
         ];
 
-        foreach ($methodsToSeek as $method) {
-            if (method_exists($model, $method)) {
-                $builder->{Str::before($method, 'Value')}(
-                    $model->{$method}($builder)
+        foreach ($attributesToSeek as $attr) {
+            $function = "{$attr}Value";
+
+            if (property_exists($model, $attr)) {
+                $builder->{$attr}($model->{$attr});
+            }
+
+            if (method_exists($model, $function)) {
+                $builder->{$attr}(
+                    $model->{$function}($builder)
                 );
             }
+        }
+
+        if ($time) {
+            $builder->cacheFor($time);
         }
 
         return $builder->cacheBaseTags($model->getCacheBaseTags());
