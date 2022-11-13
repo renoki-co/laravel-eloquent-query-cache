@@ -7,6 +7,9 @@ use Rennokki\QueryCache\Test\Models\Post;
 
 class GetTest extends TestCase
 {
+    /**
+     * @dataProvider strictModeContextProvider
+     */
     public function test_get()
     {
         $post = factory(Post::class)->create();
@@ -26,6 +29,9 @@ class GetTest extends TestCase
         );
     }
 
+    /**
+     * @dataProvider strictModeContextProvider
+     */
     public function test_get_with_columns()
     {
         $post = factory(Post::class)->create();
@@ -45,6 +51,9 @@ class GetTest extends TestCase
         );
     }
 
+    /**
+     * @dataProvider strictModeContextProvider
+     */
     public function test_get_with_string_columns()
     {
         $post = factory(Post::class)->create();

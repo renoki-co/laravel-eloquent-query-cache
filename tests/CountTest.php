@@ -7,6 +7,9 @@ use Rennokki\QueryCache\Test\Models\Post;
 
 class CountTest extends TestCase
 {
+    /**
+     * @dataProvider strictModeContextProvider
+     */
     public function test_count()
     {
         $posts = factory(Post::class, 5)->create();
@@ -21,6 +24,9 @@ class CountTest extends TestCase
         );
     }
 
+    /**
+     * @dataProvider strictModeContextProvider
+     */
     public function test_count_with_columns()
     {
         $posts = factory(Post::class, 5)->create();
