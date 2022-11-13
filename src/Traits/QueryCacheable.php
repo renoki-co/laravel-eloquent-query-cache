@@ -20,6 +20,7 @@ trait QueryCacheable
      */
     public static function bootQueryCacheable()
     {
+        /** @var \Illuminate\Database\Eloquent\Model $this */
         if (isset(static::$flushCacheOnUpdate) && static::$flushCacheOnUpdate) {
             static::observe(
                 static::getFlushQueryCacheObserver()
@@ -62,6 +63,7 @@ trait QueryCacheable
      */
     public function getCacheTagsToInvalidateOnUpdate($relation = null, $pivotedModels = null): array
     {
+        /** @var \Illuminate\Database\Eloquent\Model $this */
         return $this->getCacheBaseTags();
     }
 
@@ -82,26 +84,6 @@ trait QueryCacheable
             $model->getConnection()->getQueryGrammar(),
             $model->getConnection()->getPostProcessor(),
         );
-
-        if ($model->cacheFor) {
-            $builder->cacheFor($model->cacheFor);
-        }
-
-        if ($model->cacheTags) {
-            $builder->cacheTags($model->cacheTags);
-        }
-
-        if ($model->cachePrefix) {
-            $builder->cachePrefix($model->cachePrefix);
-        }
-
-        if ($model->cacheDriver) {
-            $builder->cacheDriver($model->cacheDriver);
-        }
-
-        if ($model->cacheUsePlainKey) {
-            $builder->withPlainKey();
-        }
 
         $attributesToSeek = [
             'cacheFor',

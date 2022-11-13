@@ -7,6 +7,9 @@ use Rennokki\QueryCache\Test\Models\Post;
 
 class PaginateTest extends TestCase
 {
+    /**
+     * @dataProvider strictModeContextProvider
+     */
     public function test_paginate()
     {
         $posts = factory(Post::class, 30)->create();
@@ -28,6 +31,9 @@ class PaginateTest extends TestCase
         $this->assertEquals(1, $postsCache->first()->id);
     }
 
+    /**
+     * @dataProvider strictModeContextProvider
+     */
     public function test_paginate_with_columns()
     {
         $posts = factory(Post::class, 30)->create();

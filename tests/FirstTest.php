@@ -7,6 +7,9 @@ use Rennokki\QueryCache\Test\Models\Post;
 
 class FirstTest extends TestCase
 {
+    /**
+     * @dataProvider strictModeContextProvider
+     */
     public function test_first()
     {
         $post = factory(Post::class)->create();
@@ -21,6 +24,9 @@ class FirstTest extends TestCase
         );
     }
 
+    /**
+     * @dataProvider strictModeContextProvider
+     */
     public function test_first_with_columns()
     {
         $post = factory(Post::class)->create();
