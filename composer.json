@@ -39,6 +39,7 @@
     "require-dev": {
         "chelout/laravel-relationship-events": "^1.5",
         "laravel/legacy-factories": "^1.3",
+        "livewire/livewire": "dev-master",
         "mockery/mockery": "^1.5",
         "orchestra/database": "^6.28|^7.0",
         "orchestra/testbench": "^6.28|^7.0",

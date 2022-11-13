@@ -37,7 +37,7 @@ abstract class TestCase extends Orchestra
     protected function getPackageProviders($app)
     {
         return [
-            //
+            \Livewire\LivewireServiceProvider::class,
         ];
     }
 
@@ -52,15 +52,24 @@ abstract class TestCase extends Orchestra
             'database' => __DIR__.'/database/database.sqlite',
             'prefix'   => '',
         ]);
+
         $app['config']->set(
-            'cache.driver', getenv('CACHE_DRIVER') ?: env('CACHE_DRIVER', 'array')
+            'cache.driver',
+            getenv('CACHE_DRIVER') ?: env('CACHE_DRIVER', 'array')
         );
+
         $app['config']->set('auth.providers.users.model', User::class);
         $app['config']->set('auth.providers.posts.model', Post::class);
         $app['config']->set('auth.providers.kids.model', Kid::class);
         $app['config']->set('auth.providers.books.model', Book::class);
         $app['config']->set('auth.providers.pages.model', Page::class);
         $app['config']->set('app.key', 'wslxrEFGWY6GfGhvN9L3wH3KSRJQQpBD');
+
+        $app['config']->set('view.paths', [
+            __DIR__.'/views',
+        ]);
+
+        $app['config']->set('livewire.view_path', __DIR__.'/views/livewire');
     }
 
     /**
