@@ -21,7 +21,6 @@ abstract class TestCase extends Orchestra
         }
 
         $this->resetDatabase();
-        $this->clearCache();
 
         $this->loadLaravelMigrations(['--database' => 'sqlite']);
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
@@ -29,6 +28,8 @@ abstract class TestCase extends Orchestra
         $this->withFactories(__DIR__.'/database/factories');
 
         $this->artisan('migrate', ['--database' => 'sqlite']);
+
+        $this->clearCache();
     }
 
     /**

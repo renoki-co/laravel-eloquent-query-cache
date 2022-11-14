@@ -21,7 +21,10 @@ class FlushCacheOnUpdateTest extends TestCase
         Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writeEvent) {
             $writeEvent = $event;
 
-            $this->assertSame(['test'], $writeEvent->tags);
+            if ($this->driverSupportsTags()) {
+                $this->assertSame(['test'], $writeEvent->tags);
+            }
+
             $this->assertEquals(3600, $writeEvent->seconds);
 
             $this->assertStringContainsString(
@@ -37,7 +40,11 @@ class FlushCacheOnUpdateTest extends TestCase
 
         Page::create(['name' => '9GAG']);
 
-        $this->assertNull(Cache::tags(['test'])->get($writeEvent->key));
+        $this->assertNull(
+            $this->driverSupportsTags()
+                ? Cache::tags(['test'])->get($writeEvent->key)
+                : Cache::get($writeEvent->key)
+        );
     }
 
     /**
@@ -51,7 +58,10 @@ class FlushCacheOnUpdateTest extends TestCase
         Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writeEvent) {
             $writeEvent = $event;
 
-            $this->assertSame(['test'], $writeEvent->tags);
+            if ($this->driverSupportsTags()) {
+                $this->assertSame(['test'], $writeEvent->tags);
+            }
+
             $this->assertEquals(3600, $writeEvent->seconds);
 
             $this->assertStringContainsString(
@@ -67,7 +77,11 @@ class FlushCacheOnUpdateTest extends TestCase
 
         $page->update(['name' => '9GAG']);
 
-        $this->assertNull(Cache::tags(['test'])->get($writeEvent->key));
+        $this->assertNull(
+            $this->driverSupportsTags()
+                ? Cache::tags(['test'])->get($writeEvent->key)
+                : Cache::get($writeEvent->key)
+        );
     }
 
     /**
@@ -81,7 +95,10 @@ class FlushCacheOnUpdateTest extends TestCase
         Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writeEvent) {
             $writeEvent = $event;
 
-            $this->assertSame(['test'], $writeEvent->tags);
+            if ($this->driverSupportsTags()) {
+                $this->assertSame(['test'], $writeEvent->tags);
+            }
+
             $this->assertEquals(3600, $writeEvent->seconds);
 
             $this->assertStringContainsString(
@@ -97,7 +114,11 @@ class FlushCacheOnUpdateTest extends TestCase
 
         $page->delete();
 
-        $this->assertNull(Cache::tags(['test'])->get($writeEvent->key));
+        $this->assertNull(
+            $this->driverSupportsTags()
+                ? Cache::tags(['test'])->get($writeEvent->key)
+                : Cache::get($writeEvent->key)
+        );
     }
 
     /**
@@ -111,7 +132,10 @@ class FlushCacheOnUpdateTest extends TestCase
         Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writeEvent) {
             $writeEvent = $event;
 
-            $this->assertSame(['test'], $writeEvent->tags);
+            if ($this->driverSupportsTags()) {
+                $this->assertSame(['test'], $writeEvent->tags);
+            }
+
             $this->assertEquals(3600, $writeEvent->seconds);
 
             $this->assertStringContainsString(
@@ -127,6 +151,10 @@ class FlushCacheOnUpdateTest extends TestCase
 
         $page->forceDelete();
 
-        $this->assertNull(Cache::tags(['test'])->get($writeEvent->key));
+        $this->assertNull(
+            $this->driverSupportsTags()
+                ? Cache::tags(['test'])->get($writeEvent->key)
+                : Cache::get($writeEvent->key)
+        );
     }
 }

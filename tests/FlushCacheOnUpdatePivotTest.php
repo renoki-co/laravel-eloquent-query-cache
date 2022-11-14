@@ -30,7 +30,10 @@ class FlushCacheOnUpdatePivotTest extends TestCase
                 $this->assertNull($event->value->first());
             }
 
-            $this->assertEquals(['user:1:roles'], $event->tags);
+            if ($this->driverSupportsTags()) {
+                $this->assertEquals(['user:1:roles'], $event->tags);
+            }
+
             $this->assertStringContainsString(
                 'inner join "role_user"',
                 $event->key,

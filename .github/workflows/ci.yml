@@ -38,32 +38,44 @@ jobs:
     name: PHP ${{ matrix.php }} (cache:${{ matrix.cache_driver }}) - Laravel ${{ matrix.laravel }} --${{ matrix.prefer }}
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ matrix.php }}
-        extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv
-        coverage: pcov
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv
+          coverage: pcov
 
-    - uses: actions/cache@v3.0.11
-      name: Cache dependencies
-      with:
-        path: ~/.composer/cache/files
-        key: composer-php-${{ matrix.php }}-${{ matrix.laravel }}-${{ matrix.prefer }}-${{ hashFiles('composer.json') }}
+      - uses: actions/cache@v3.0.11
+        name: Cache dependencies
+        with:
+          path: ~/.composer/cache/files
+          key: composer-php-${{ matrix.php }}-${{ matrix.laravel }}-${{ matrix.prefer }}-${{ hashFiles('composer.json') }}
 
-    - name: Install dependencies
-      run: |
-        composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "orchestra/database:${{ matrix.testbench }}" --no-interaction --no-update
-        composer update --${{ matrix.prefer }} --prefer-dist --no-interaction --no-suggest
+      - name: Install dependencies
+        run: |
+          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "orchestra/database:${{ matrix.testbench }}" --no-interaction --no-update
+          composer update --${{ matrix.prefer }} --prefer-dist --no-interaction --no-suggest
 
-    - name: Run tests
-      run: |
-        vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
-      env:
-        CACHE_DRIVER: ${{ matrix.cache_driver }}
+      - name: Install Redis
+        if: matrix.cache_driver == 'redis'
+        run: |
+          docker run -d -p 6379:6379 redis:6
+          sleep 5
 
-    - uses: codecov/codecov-action@v3.1.1
-      with:
-        fail_ci_if_error: false
+      - name: Install Memcahced
+        if: matrix.cache_driver == 'memcached'
+        run: |
+          docker run -d -p 11211:11211 memcached:1.6
+          sleep 5
+
+      - name: Run tests
+        run: |
+          vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
+        env:
+          CACHE_DRIVER: ${{ matrix.cache_driver }}
+
+      - uses: codecov/codecov-action@v3.1.1
+        with:
+          fail_ci_if_error: false

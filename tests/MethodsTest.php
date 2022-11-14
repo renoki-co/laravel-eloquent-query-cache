@@ -97,9 +97,17 @@ class MethodsTest extends TestCase
         $flushPassed = false;
 
         Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$flushPassed) {
-            $this->assertEquals(['test'], $event->tags);
+            if ($this->driverSupportsTags()) {
+                $this->assertEquals(['test'], $event->tags);
+            }
+
             $this->assertTrue(Post::flushQueryCache(['test']));
-            $this->assertNull(Cache::tags(['test'])->get($event->key));
+
+            if ($this->driverSupportsTags()) {
+                $this->assertNull(Cache::tags(['test'])->get($event->key));
+            } else {
+                $this->assertNull(Cache::get($event->key));
+            }
 
             $flushPassed = true;
         });
@@ -121,9 +129,17 @@ class MethodsTest extends TestCase
         $flushPassed = false;
 
         Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$flushPassed) {
-            $this->assertEquals(['test'], $event->tags);
+            if ($this->driverSupportsTags()) {
+                $this->assertEquals(['test'], $event->tags);
+            }
+
             $this->assertTrue(Post::flushQueryCache(['production']));
-            $this->assertNotNull(Cache::tags(['test'])->get($event->key));
+
+            $this->assertNull(
+                $this->driverSupportsTags()
+                    ? Cache::tags(['test'])->get($event->key)
+                    : Cache::get($event->key)
+            );
 
             $flushPassed = true;
         });
@@ -145,12 +161,18 @@ class MethodsTest extends TestCase
         $flushPassed = false;
 
         Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$flushPassed) {
-            $this->assertEquals(['test', Book::class], $event->tags);
+            if ($this->driverSupportsTags()) {
+                $this->assertEquals(['test', Book::class], $event->tags);
+            }
+
             $this->assertTrue(Book::flushQueryCache());
 
-            $this->assertNull(Cache::tags(['test', Book::class])->get($event->key));
-            $this->assertNull(Cache::tags([Book::class])->get($event->key));
-            $this->assertNull(Cache::tags(['test'])->get($event->key));
+            if ($this->driverSupportsTags()) {
+                $this->assertNull(Cache::tags(['test', Book::class])->get($event->key));
+                $this->assertNull(Cache::tags([Book::class])->get($event->key));
+                $this->assertNull(Cache::tags(['test'])->get($event->key));
+            }
+
             $this->assertNull(Cache::get($event->key));
 
             $flushPassed = true;
@@ -195,7 +217,10 @@ class MethodsTest extends TestCase
         $appendPassed = false;
 
         Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$appendPassed) {
-            $this->assertEquals(['test', 'test2', Book::class], $event->tags);
+            if ($this->driverSupportsTags()) {
+                $this->assertEquals(['test', 'test2', Book::class], $event->tags);
+            }
+
             $appendPassed = true;
         });
 

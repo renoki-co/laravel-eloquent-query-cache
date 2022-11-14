@@ -217,11 +217,11 @@ trait QueryCacheModule
     {
         $cache = $this->getCacheDriver();
 
-        if (! method_exists($cache, 'tags')) {
+        try {
+            return $cache->tags($tag)->flush();
+        } catch (BadMethodCallException $e) {
             return $cache->flush();
         }
-
-        return $cache->tags($tag)->flush();
     }
 
     /**
