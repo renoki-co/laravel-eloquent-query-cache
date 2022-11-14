@@ -21,18 +21,21 @@ jobs:
           - '8.0'
           - '8.1'
         laravel:
-          - 8.*
           - 9.*
         prefer:
           - 'prefer-lowest'
           - 'prefer-stable'
+        cache_driver:
+          - array
+          - database
+          - file
+          - redis
+          - memcached
         include:
-          - laravel: '8.*'
-            testbench: '6.*'
           - laravel: 9.*
             testbench: 7.*
 
-    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} --${{ matrix.prefer }}
+    name: PHP ${{ matrix.php }} (cache:${{ matrix.cache_driver }}) - Laravel ${{ matrix.laravel }} --${{ matrix.prefer }}
 
     steps:
     - uses: actions/checkout@v3
@@ -57,10 +60,10 @@ jobs:
 
     - name: Run tests
       run: |
-        CACHE_DRIVER=array vendor/bin/phpunit --coverage-text --coverage-clover=coverage_array.xml
-        CACHE_DRIVER=file vendor/bin/phpunit --coverage-text --coverage-clover=coverage_file.xml
+        vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
+      env:
+        CACHE_DRIVER: ${{ matrix.cache_driver }}
 
     - uses: codecov/codecov-action@v3.1.1
       with:
         fail_ci_if_error: false
-        file: '*.xml'

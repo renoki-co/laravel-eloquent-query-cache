@@ -15,6 +15,7 @@ class FlushQueryCacheObserver
      */
     public function created(Model $model)
     {
+        /** @var Model&\Rennokki\QueryCache\Traits\QueryCacheable $model */
         $this->invalidateCache($model);
     }
 
@@ -26,6 +27,7 @@ class FlushQueryCacheObserver
      */
     public function updated(Model $model)
     {
+        /** @var Model&\Rennokki\QueryCache\Traits\QueryCacheable $model */
         $this->invalidateCache($model);
     }
 
@@ -37,6 +39,7 @@ class FlushQueryCacheObserver
      */
     public function deleted(Model $model)
     {
+        /** @var Model&\Rennokki\QueryCache\Traits\QueryCacheable $model */
         $this->invalidateCache($model);
     }
 
@@ -48,6 +51,7 @@ class FlushQueryCacheObserver
      */
     public function forceDeleted(Model $model)
     {
+        /** @var Model&\Rennokki\QueryCache\Traits\QueryCacheable $model */
         $this->invalidateCache($model);
     }
 
@@ -59,6 +63,7 @@ class FlushQueryCacheObserver
      */
     public function restored(Model $model)
     {
+        /** @var Model&\Rennokki\QueryCache\Traits\QueryCacheable $model */
         $this->invalidateCache($model);
     }
 
@@ -72,6 +77,7 @@ class FlushQueryCacheObserver
      */
     public function belongsToManyAttached($relation, Model $model, $ids)
     {
+        /** @var Model&\Rennokki\QueryCache\Traits\QueryCacheable $model */
         $this->invalidateCache($model, $relation, $model->{$relation}()->findMany($ids));
     }
 
@@ -85,6 +91,7 @@ class FlushQueryCacheObserver
      */
     public function belongsToManyDetached($relation, Model $model, $ids)
     {
+        /** @var Model&\Rennokki\QueryCache\Traits\QueryCacheable $model */
         $this->invalidateCache($model, $relation, $model->{$relation}()->findMany($ids));
     }
 
@@ -98,6 +105,7 @@ class FlushQueryCacheObserver
      */
     public function belongsToManyUpdatedExistingPivot($relation, Model $model, $ids)
     {
+        /** @var Model&\Rennokki\QueryCache\Traits\QueryCacheable $model */
         $this->invalidateCache($model, $relation, $model->{$relation}()->findMany($ids));
     }
 
@@ -111,6 +119,7 @@ class FlushQueryCacheObserver
      */
     public function morphToManyAttached($relation, Model $model, $ids)
     {
+        /** @var Model&\Rennokki\QueryCache\Traits\QueryCacheable $model */
         $this->invalidateCache($model, $relation, $model->{$relation}()->findMany($ids));
     }
 
@@ -124,6 +133,7 @@ class FlushQueryCacheObserver
      */
     public function morphToManyDetached($relation, Model $model, $ids)
     {
+        /** @var Model&\Rennokki\QueryCache\Traits\QueryCacheable $model */
         $this->invalidateCache($model, $relation, $model->{$relation}()->findMany($ids));
     }
 
@@ -137,6 +147,7 @@ class FlushQueryCacheObserver
      */
     public function morphToManyUpdatedExistingPivot($relation, Model $model, $ids)
     {
+        /** @var Model&\Rennokki\QueryCache\Traits\QueryCacheable $model */
         $this->invalidateCache($model, $relation, $model->{$relation}()->findMany($ids));
     }
 
@@ -152,6 +163,7 @@ class FlushQueryCacheObserver
      */
     protected function invalidateCache(Model $model, $relation = null, $pivotedModels = null): void
     {
+        /** @var Model&\Rennokki\QueryCache\Traits\QueryCacheable $model */
         $class = get_class($model);
 
         $tags = $model->getCacheTagsToInvalidateOnUpdate($relation, $pivotedModels);

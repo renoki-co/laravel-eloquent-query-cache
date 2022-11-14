@@ -71,11 +71,8 @@ trait QueryCacheModule
      */
     public function getFromQueryCache(string $method = 'get', array $columns = ['*'], string $id = null)
     {
-        if (is_null($this->columns)) {
-            $this->columns = $columns;
-        }
-
-        $key = $this->getCacheKey($method);
+        /** @var \Rennokki\QueryCache\QueryBuilderWithCache $this */
+        $key = $this->getCacheKey($method, $columns);
         $cache = $this->getCache();
         $callback = $this->getQueryCacheCallback($method, $columns, $id);
         $time = $this->getCacheFor();
@@ -97,6 +94,7 @@ trait QueryCacheModule
      */
     public function getQueryCacheCallback(string $method = 'get', $columns = ['*'], string $id = null)
     {
+        /** @var \Rennokki\QueryCache\QueryBuilderWithCache $this */
         return function () use ($method, $columns) {
             $this->avoidCache = true;
 
@@ -108,13 +106,15 @@ trait QueryCacheModule
      * Get a unique cache key for the complete query.
      *
      * @param  string  $method
+     * @param  array  $columns
      * @param  string|null  $id
      * @param  string|null  $appends
      * @return string
      */
-    public function getCacheKey(string $method = 'get', string $id = null, string $appends = null): string
+    public function getCacheKey(string $method = 'get', array $columns = ['*'], string $id = null, string $appends = null): string
     {
-        $key = $this->generateCacheKey($method, $id, $appends);
+        /** @var \Rennokki\QueryCache\QueryBuilderWithCache $this */
+        $key = $this->generateCacheKey($method, $columns, $id, $appends);
         $prefix = $this->getCachePrefix();
 
         return "{$prefix}:{$key}";
@@ -124,13 +124,15 @@ trait QueryCacheModule
      * Generate the unique cache key for the query.
      *
      * @param  string  $method
+     * @param  array  $columns
      * @param  string|null  $id
      * @param  string|null  $appends
      * @return string
      */
-    public function generateCacheKey(string $method = 'get', string $id = null, string $appends = null): string
+    public function generateCacheKey(string $method = 'get', array $columns = ['*'], string $id = null, string $appends = null): string
     {
-        $key = $this->generatePlainCacheKey($method, $id, $appends);
+        /** @var \Rennokki\QueryCache\QueryBuilderWithCache $this */
+        $key = $this->generatePlainCacheKey($method, $columns, $id, $appends);
 
         if ($this->shouldUsePlainKey()) {
             return $key;
@@ -143,20 +145,28 @@ trait QueryCacheModule
      * Generate the plain unique cache key for the query.
      *
      * @param  string  $method
+     * @param  array  $columns
      * @param  string|null  $id
      * @param  string|null  $appends
      * @return string
      */
-    public function generatePlainCacheKey(string $method = 'get', string $id = null, string $appends = null): string
+    public function generatePlainCacheKey(string $method = 'get', array $columns = ['*'], string $id = null, string $appends = null): string
     {
-        $name = $this->connection->getName();
+        /** @var \Rennokki\QueryCache\QueryBuilderWithCache $this */
+        /** @var \Illuminate\Database\Connection $connection */
+        $connection = $this->getConnection();
+        $name = $connection->getName();
 
-        // Count has no Sql, that's why it can't be used ->toSql()
-        if ($method === 'count') {
-            return $name.$method.$id.serialize($this->getBindings()).$appends;
-        }
-
-        return $name.$method.$id.$this->toSql().serialize($this->getBindings()).$appends;
+        return sprintf(
+            '%s;%s;%s;%s;%s;%s;%s',
+            $name,
+            $method,
+            collect($columns)->join(':'),
+            $id,
+            $method === 'count' ? null : $this->toSql(),
+            collect($this->getBindings())->map(fn ($v, $k) => "{$k}:{$v}")->join(';'),
+            $appends,
+        );
     }
 
     /**
@@ -194,11 +204,11 @@ trait QueryCacheModule
     {
         $cache = $this->getCacheDriver();
 
-        try {
-            return $cache->tags($tag)->flush();
-        } catch (BadMethodCallException $e) {
+        if (! method_exists($cache, 'tags')) {
             return $cache->flush();
         }
+
+        return $cache->tags($tag)->flush();
     }
 
     /**
@@ -247,6 +257,17 @@ trait QueryCacheModule
     public function doNotCache(bool $avoidCache = true)
     {
         return $this->dontCache($avoidCache);
+    }
+
+    /**
+     * Alias for dontCache().
+     *
+     * @param  bool  $avoidCache
+     * @return \Illuminate\Database\Query\Builder|static
+     */
+    public function avoidCache(bool $avoid = true)
+    {
+        return $this->dontCache($avoid);
     }
 
     /**

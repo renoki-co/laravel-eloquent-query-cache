@@ -2,14 +2,11 @@
 
 namespace Rennokki\QueryCache\Traits;
 
-use Illuminate\Support\Str;
 use Rennokki\QueryCache\FlushQueryCacheObserver;
-use Rennokki\QueryCache\Query\Builder;
 
 /**
- * @method static bool flushQueryCache(array $tags = [])
- * @method static bool flushQueryCacheWithTag(string $string)
- * @method static \Illuminate\Database\Query\Builder cacheQuery(\DateTime|int|null $time)
+ * @method static \Rennokki\QueryCache\EloquentBuilderWithCache cacheQuery(\DateTime|int|null $time)
+ * @method static \Rennokki\QueryCache\EloquentBuilderWithCache cacheFor(\DateTime|int|null $time)
  */
 trait QueryCacheable
 {
@@ -21,7 +18,7 @@ trait QueryCacheable
     public static function bootQueryCacheable()
     {
         /** @var \Illuminate\Database\Eloquent\Model $this */
-        if (isset(static::$flushCacheOnUpdate) && static::$flushCacheOnUpdate) {
+        if (property_exists(static::class, 'flushCacheOnUpdate') && static::$flushCacheOnUpdate) {
             static::observe(
                 static::getFlushQueryCacheObserver()
             );
@@ -46,7 +43,7 @@ trait QueryCacheable
      *
      * @return array
      */
-    protected function getCacheBaseTags(): array
+    public static function getCacheBaseTags(): array
     {
         return [
             (string) static::class,
@@ -63,54 +60,29 @@ trait QueryCacheable
      */
     public function getCacheTagsToInvalidateOnUpdate($relation = null, $pivotedModels = null): array
     {
-        /** @var \Illuminate\Database\Eloquent\Model $this */
+        /** @var \Illuminate\Database\Eloquent\Model&QueryCacheable $this */
         return $this->getCacheBaseTags();
     }
 
     /**
-     * Create a new query that is handled through the caching method.
+     * Flush the cache that contains specific tags.
      *
-     * @param  \DateTime|int|null  $time
-     * @return \Rennokki\QueryCache\Query\Builder
+     * @param  array  $tags
+     * @return bool
      */
-    public static function cacheQuery($time = null)
+    public static function flushQueryCache(array $tags = []): bool
     {
-        /** @var \Illuminate\Database\Eloquent\Model $this */
-        /** @var \Illuminate\Database\Eloquent\Model $model */
-        $model = new static;
+        return static::cacheQuery()->flushQueryCache($tags);
+    }
 
-        $builder = new Builder(
-            $model->getConnection(),
-            $model->getConnection()->getQueryGrammar(),
-            $model->getConnection()->getPostProcessor(),
-        );
-
-        $attributesToSeek = [
-            'cacheFor',
-            'cacheTags',
-            'cachePrefix',
-            'cacheDriver',
-            'cacheUsePlainKey',
-        ];
-
-        foreach ($attributesToSeek as $attr) {
-            $function = "{$attr}Value";
-
-            if (property_exists($model, $attr)) {
-                $builder->{$attr}($model->{$attr});
-            }
-
-            if (method_exists($model, $function)) {
-                $builder->{$attr}(
-                    $model->{$function}($builder)
-                );
-            }
-        }
-
-        if ($time) {
-            $builder->cacheFor($time);
-        }
-
-        return $builder->cacheBaseTags($model->getCacheBaseTags());
+    /**
+     * Flush the cache for a specific tag.
+     *
+     * @param  string  $tag
+     * @return bool
+     */
+    public static function flushQueryCacheWithTag(string $tag): bool
+    {
+        return static::cacheQuery()->flushQueryCacheWithTag($tag);
     }
 }

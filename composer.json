@@ -20,8 +20,8 @@
         }
     ],
     "require": {
-        "illuminate/database": "^8.83|^9.35",
-        "illuminate/support": "^8.83|^9.35"
+        "illuminate/database": "^9.35",
+        "illuminate/support": "^9.35"
     },
     "autoload": {
         "psr-4": {
@@ -41,13 +41,20 @@
         "laravel/legacy-factories": "^1.3",
         "livewire/livewire": "dev-master",
         "mockery/mockery": "^1.5",
-        "orchestra/database": "^6.28|^7.0",
-        "orchestra/testbench": "^6.28|^7.0",
-        "orchestra/testbench-core": "^6.28|^7.0",
+        "orchestra/database": "^7.0",
+        "orchestra/testbench": "^7.0",
+        "orchestra/testbench-core": "^7.0",
         "phpunit/phpunit": "^9.5.25"
     },
     "config": {
         "sort-packages": true
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Rennokki\\QueryCache\\QueryCacheServiceProvider"
+            ]
+        }
+    }
 }
