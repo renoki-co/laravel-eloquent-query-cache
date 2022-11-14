@@ -164,6 +164,12 @@ trait QueryCacheModule
         $connection = $this->getConnection();
         $name = $connection->getName();
 
+        if ($this->shouldUsePreviousKeyFingerprint()) {
+            return $method === 'count'
+                ? $name.$method.$id.serialize($this->getBindings()).$appends
+                : $name.$method.$id.$this->toSql().serialize($this->getBindings()).$appends;
+        }
+
         return sprintf(
             '%s;%s;%s;%s;%s;%s;%s',
             $name,
@@ -431,6 +437,17 @@ trait QueryCacheModule
     public function shouldUsePlainKey(): bool
     {
         return $this->cacheUsePlainKey;
+    }
+
+    /**
+     * Check if the fingerprint generation for the keys
+     * should be the same as in prev. version. (3.x)
+     *
+     * @return bool
+     */
+    public function shouldUsePreviousKeyFingerprint(): bool
+    {
+        return $this->cacheUsePreviousKeyFingerprint;
     }
 
     /**
