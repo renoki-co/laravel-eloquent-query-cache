@@ -55,6 +55,13 @@ trait QueryCacheModule
     protected $cacheUsePlainKey = false;
 
     /**
+     * Specify if the key generation should work like in 3.x
+     *
+     * @var bool
+     */
+    protected $cacheUsePreviousKeyFingerprint = false;
+
+    /**
      * Set if the caching should be avoided.
      *
      * @var bool
@@ -358,6 +365,20 @@ trait QueryCacheModule
     public function cacheUsePlainKey(bool $usePlainKey = true)
     {
         return $this->withPlainKey($usePlainKey);
+    }
+
+    /**
+     * Specify the cache key generation fingerprint should be still used
+     * as in the prev. version (3.x).
+     *
+     * @param  bool  $usePreviousKeyFingerprint
+     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
+     */
+    public function cacheUsePreviousKeyFingerprint(bool $usePreviousKeyFingerprint = true)
+    {
+        $this->cacheUsePreviousKeyFingerprint = $usePreviousKeyFingerprint;
+
+        return $this;
     }
 
     /**

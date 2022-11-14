@@ -60,6 +60,7 @@ class QueryBuilderWithCache extends QueryBuilder implements QueryCacheModuleInte
             'cachePrefix',
             'cacheDriver',
             'cacheUsePlainKey',
+            'cacheUsePreviousKeyFingerprint',
         ];
 
         if ($model) {
