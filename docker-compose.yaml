@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  redis:
+    image: redis:6-alpine
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      retries: 3
+      timeout: 5s
+  memcached:
+    image: memcached:1.6-alpine
+    ports:
+      - 11211:11211

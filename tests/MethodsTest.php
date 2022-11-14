@@ -124,7 +124,7 @@ class MethodsTest extends TestCase
     /**
      * @dataProvider strictModeContextProvider
      */
-    public function test_cache_flush_without_the_right_tag()
+    public function test_cache_flush_with_other_tag()
     {
         $flushPassed = false;
 
@@ -160,7 +160,7 @@ class MethodsTest extends TestCase
     /**
      * @dataProvider strictModeContextProvider
      */
-    public function test_cache_flush_with_default_tags_attached()
+    public function test_cache_flush_without_specifying_cache_tags()
     {
         $flushPassed = false;
 
@@ -170,6 +170,40 @@ class MethodsTest extends TestCase
             }
 
             $this->assertTrue(Book::flushQueryCache());
+
+            if ($this->driverSupportsTags()) {
+                $this->assertNull(Cache::tags(['test', Book::class])->get($event->key));
+                $this->assertNull(Cache::tags([Book::class])->get($event->key));
+                $this->assertNull(Cache::tags(['test'])->get($event->key));
+            }
+
+            $this->assertNull(Cache::get($event->key));
+
+            $flushPassed = true;
+        });
+
+        factory(Book::class)->create();
+
+        Book::cacheQuery(now()->addHours(1))
+            ->cacheTags(['test'])
+            ->first();
+
+        $this->assertTrue($flushPassed);
+    }
+
+    /**
+     * @dataProvider strictModeContextProvider
+     */
+    public function test_cache_flush_without_specifying_the_base_tags()
+    {
+        $flushPassed = false;
+
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$flushPassed) {
+            if ($this->driverSupportsTags()) {
+                $this->assertEquals(['test', Book::class], $event->tags);
+            }
+
+            $this->assertTrue(Book::flushQueryCache(['test']));
 
             if ($this->driverSupportsTags()) {
                 $this->assertNull(Cache::tags(['test', Book::class])->get($event->key));

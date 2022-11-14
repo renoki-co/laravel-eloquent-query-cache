@@ -61,13 +61,12 @@ jobs:
       - name: Install Redis
         if: matrix.cache_driver == 'redis'
         run: |
-          docker run -d -p 6379:6379 redis:6
-          sleep 5
+          docker up -d redis
 
       - name: Install Memcahced
         if: matrix.cache_driver == 'memcached'
         run: |
-          docker run -d -p 11211:11211 memcached:1.6
+          docker up -d memcached
           sleep 5
 
       - name: Run tests
