@@ -135,11 +135,15 @@ class MethodsTest extends TestCase
 
             $this->assertTrue(Post::flushQueryCache(['production']));
 
-            $this->assertNull(
-                $this->driverSupportsTags()
-                    ? Cache::tags(['test'])->get($event->key)
-                    : Cache::get($event->key)
-            );
+            if ($this->driverSupportsTags()) {
+                $this->assertNotNull(
+                    Cache::tags(['test'])->get($event->key),
+                );
+            } else {
+                $this->assertNull(
+                    Cache::get($event->key)
+                );
+            }
 
             $flushPassed = true;
         });

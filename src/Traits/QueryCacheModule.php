@@ -405,17 +405,26 @@ trait QueryCacheModule
     public function getCache()
     {
         $cache = $this->getCacheDriver();
-
-        $tags = array_merge(
-            $this->getCacheTags() ?: [],
-            $this->getCacheBaseTags() ?: []
-        );
+        $tags = $this->computeTags();
 
         try {
             return $tags ? $cache->tags($tags) : $cache;
         } catch (BadMethodCallException $e) {
             return $cache;
         }
+    }
+
+    /**
+     * Compute the final tags used for caching.
+     *
+     * @return array
+     */
+    public function computeTags(): array
+    {
+        return array_merge(
+            $this->getCacheTags() ?: [],
+            $this->getCacheBaseTags() ?: []
+        );
     }
 
     /**
