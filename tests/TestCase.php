@@ -38,6 +38,7 @@ abstract class TestCase extends Orchestra
     {
         return [
             \Livewire\LivewireServiceProvider::class,
+            \Rennokki\QueryCache\QueryCacheServiceProvider::class,
         ];
     }
 
@@ -55,6 +56,11 @@ abstract class TestCase extends Orchestra
 
         $app['config']->set(
             'cache.driver',
+            getenv('CACHE_DRIVER') ?: env('CACHE_DRIVER', 'array')
+        );
+
+        $app['config']->set(
+            'cache.default',
             getenv('CACHE_DRIVER') ?: env('CACHE_DRIVER', 'array')
         );
 
@@ -93,26 +99,6 @@ abstract class TestCase extends Orchestra
     }
 
     /**
-     * Get the cache with tags, if the driver supports it.
-     *
-     * @param  string  $key
-     * @param  array|null  $tags
-     * @return mixed
-     */
-    protected function getCacheWithTags(string $key, $tags = null)
-    {
-        return $this->driverSupportsTags()
-            ? Cache::tags($tags)->get($key)
-            : Cache::get($key);
-    }
-
-    public function strictModeContextProvider(): iterable
-    {
-        yield [true];
-        yield [false];
-    }
-
-    /**
      * Check if the current driver supports tags.
      *
      * @return bool
@@ -120,5 +106,11 @@ abstract class TestCase extends Orchestra
     protected function driverSupportsTags(): bool
     {
         return ! in_array(config('cache.driver'), ['file', 'database']);
+    }
+
+    public function strictModeContextProvider(): iterable
+    {
+        yield [true];
+        yield [false];
     }
 }

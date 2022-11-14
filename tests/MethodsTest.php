@@ -2,9 +2,13 @@
 
 namespace Rennokki\QueryCache\Test;
 
+use Illuminate\Support\Str;
+use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Support\Facades\Cache;
-use Rennokki\QueryCache\Test\Models\Book;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Cache\Events\KeyWritten;
 use Rennokki\QueryCache\Test\Models\Kid;
+use Rennokki\QueryCache\Test\Models\Book;
 use Rennokki\QueryCache\Test\Models\Post;
 use Rennokki\QueryCache\Test\Models\User;
 
@@ -15,15 +19,16 @@ class MethodsTest extends TestCase
      */
     public function test_do_not_cache()
     {
-        $post = factory(Post::class)->create();
+        Event::listen(KeyWritten::class, function (KeyWritten $event) {
+            $this->fail('The cache should not be written');
+        });
 
-        $storedPost = Post::cacheQuery(now()->addHours(1))->doNotCache()->first();
-        $cache = Cache::get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
-        $this->assertNull($cache);
+        factory(Post::class, 10)->create();
 
-        $storedPost = Post::cacheQuery(now()->addHours(1))->dontCache()->first();
-        $cache = Cache::get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
-        $this->assertNull($cache);
+        $this->assertSame(
+            Post::cacheQuery(now()->addHours(1))->avoidCache()->get()->toArray(),
+            Post::cacheQuery(now()->addHours(1))->avoidCache()->get()->toArray(),
+        );
     }
 
     /**
@@ -31,11 +36,25 @@ class MethodsTest extends TestCase
      */
     public function test_cache_prefix()
     {
-        $post = factory(Post::class)->create();
-        $storedPost = Post::cacheQuery(now()->addHours(1))->cachePrefix('test')->first();
-        $cache = Cache::get('test:sqlitegetselect * from "posts" limit 1a:0:{}');
+        $writePassed = false;
+        $hitPassed = false;
 
-        $this->assertNotNull($cache);
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writePassed) {
+            $this->assertStringStartsWith('test', $event->key);
+            $writePassed = true;
+        });
+
+        Event::listen(CacheHit::class, function (CacheHit $event) use (&$hitPassed) {
+            $this->assertStringStartsWith('test', $event->key);
+            $hitPassed = true;
+        });
+
+        factory(Post::class)->create();
+
+        Post::cacheQuery(now()->addHours(1))->cachePrefix('test')->first();
+        Post::cacheQuery(now()->addHours(1))->cachePrefix('test')->first();
+
+        $this->assertTrue($writePassed && $hitPassed);
     }
 
     /**
@@ -43,19 +62,31 @@ class MethodsTest extends TestCase
      */
     public function test_cache_tags()
     {
-        $post = factory(Post::class)->create();
-        $storedPost = Post::cacheQuery(now()->addHours(1))->cacheTags(['test'])->first();
+        $writePassed = false;
+        $hitPassed = false;
 
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writePassed) {
+            if ($this->driverSupportsTags()) {
+                $this->assertSame(['test'], $event->tags);
+            }
 
-        // The caches that do not support tagging should
-        // cache the query either way.
-        $this->driverSupportsTags()
-            ? $this->assertNull($cache)
-            : $this->assertNotNull($cache);
+            $writePassed = true;
+        });
 
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
-        $this->assertNotNull($cache);
+        Event::listen(CacheHit::class, function (CacheHit $event) use (&$hitPassed) {
+            if ($this->driverSupportsTags()) {
+                $this->assertSame(['test'], $event->tags);
+            }
+
+            $hitPassed = true;
+        });
+
+        factory(Post::class)->create();
+
+        Post::cacheQuery(now()->addHours(1))->cacheTags(['test'])->first();
+        Post::cacheQuery(now()->addHours(1))->cacheTags(['test'])->first();
+
+        $this->assertTrue($writePassed && $hitPassed);
     }
 
     /**
@@ -63,16 +94,23 @@ class MethodsTest extends TestCase
      */
     public function test_cache_flush_with_the_right_tag()
     {
-        $post = factory(Post::class)->create();
-        $storedPost = Post::cacheQuery(now()->addHours(1))->cacheTags(['test'])->first();
+        $flushPassed = false;
 
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
-        $this->assertNotNull($cache);
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$flushPassed) {
+            $this->assertEquals(['test'], $event->tags);
+            $this->assertTrue(Post::flushQueryCache(['test']));
+            $this->assertNull(Cache::tags(['test'])->get($event->key));
 
-        Post::flushQueryCache(['test']);
+            $flushPassed = true;
+        });
 
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
-        $this->assertNull($cache);
+        factory(Post::class)->create();
+
+        Post::cacheQuery(now()->addHours(1))
+            ->cacheTags(['test'])
+            ->first();
+
+        $this->assertTrue($flushPassed);
     }
 
     /**
@@ -80,43 +118,23 @@ class MethodsTest extends TestCase
      */
     public function test_cache_flush_without_the_right_tag()
     {
-        $post = factory(Post::class)->create();
-        $storedPost = Post::cacheQuery(now()->addHours(1))->cacheTags(['test'])->first();
+        $flushPassed = false;
 
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
-        $this->assertNotNull($cache);
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$flushPassed) {
+            $this->assertEquals(['test'], $event->tags);
+            $this->assertTrue(Post::flushQueryCache(['production']));
+            $this->assertNotNull(Cache::tags(['test'])->get($event->key));
 
-        Post::flushQueryCache(['test2']);
-        Post::flushQueryCacheWithTag('test2');
+            $flushPassed = true;
+        });
 
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
+        factory(Post::class)->create();
 
-        // The caches that do not support tagging should
-        // flush the cache either way since tags are not supported.
-        $this->driverSupportsTags()
-            ? $this->assertNotNull($cache)
-            : $this->assertNull($cache);
-    }
+        Post::cacheQuery(now()->addHours(1))
+            ->cacheTags(['test'])
+            ->first();
 
-    /**
-     * @dataProvider strictModeContextProvider
-     */
-    public function test_cache_flush_with_more_tags()
-    {
-        $post = factory(Post::class)->create();
-        $storedPost = Post::cacheQuery(now()->addHours(1))->cacheTags(['test'])->first();
-
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
-        $this->assertNotNull($cache);
-
-        Post::flushQueryCache([
-            'test',
-            'test2',
-            'test3',
-        ]);
-
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
-        $this->assertNull($cache);
+        $this->assertTrue($flushPassed);
     }
 
     /**
@@ -124,17 +142,27 @@ class MethodsTest extends TestCase
      */
     public function test_cache_flush_with_default_tags_attached()
     {
-        $book = factory(Book::class)->create();
-        $storedBook = Book::cacheQuery(now()->addHours(1))->cacheTags(['test'])->first();
+        $flushPassed = false;
 
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "books" limit 1a:0:{}', ['test', Book::getCacheBaseTags()[0]]);
-        $this->assertNotNull($cache);
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$flushPassed) {
+            $this->assertEquals(['test', Book::class], $event->tags);
+            $this->assertTrue(Book::flushQueryCache());
 
-        Book::flushQueryCache();
+            $this->assertNull(Cache::tags(['test', Book::class])->get($event->key));
+            $this->assertNull(Cache::tags([Book::class])->get($event->key));
+            $this->assertNull(Cache::tags(['test'])->get($event->key));
+            $this->assertNull(Cache::get($event->key));
 
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "books" limit 1a:0:{}', ['test', Book::getCacheBaseTags()[0]]);
+            $flushPassed = true;
+        });
 
-        $this->assertNull($cache);
+        factory(Book::class)->create();
+
+        Book::cacheQuery(now()->addHours(1))
+            ->cacheTags(['test'])
+            ->first();
+
+        $this->assertTrue($flushPassed);
     }
 
     /**
@@ -142,11 +170,21 @@ class MethodsTest extends TestCase
      */
     public function test_hashed_key()
     {
-        $kid = factory(Kid::class)->create();
-        $storedKid = Kid::cacheQuery(now()->addHours(1))->withPlainKey(false)->first();
-        $cache = Cache::get('leqc:156667fa9bcb7fb8abb01018568648406f251ef65736e89e6fd27d08bc48b5bb');
+        $writePassed = false;
 
-        $this->assertNotNull($cache);
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writePassed) {
+            $this->assertStringStartsWith('leqc', $event->key);
+            $this->assertEquals(64, strlen(Str::after($event->key, 'leqc:')));
+            $writePassed = true;
+        });
+
+        factory(Kid::class)->create();
+
+        Kid::cacheQuery(now()->addHours(1))
+            ->withPlainKey(false)
+            ->first();
+
+        $this->assertTrue($writePassed);
     }
 
     /**
@@ -154,30 +192,21 @@ class MethodsTest extends TestCase
      */
     public function test_append_cache_tags()
     {
-        $post = factory(Post::class)->create();
-        $storedPost = Post::cacheQuery(now()->addHours(1))->appendCacheTags(['test'])->first();
+        $appendPassed = false;
 
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$appendPassed) {
+            $this->assertEquals(['test', 'test2', Book::class], $event->tags);
+            $appendPassed = true;
+        });
 
-        // The caches that do not support tagging should
-        // cache the query either way.
-        $this->driverSupportsTags()
-            ? $this->assertNull($cache)
-            : $this->assertNotNull($cache);
+        factory(Book::class)->create();
 
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "posts" limit 1a:0:{}', ['test']);
-        $this->assertNotNull($cache);
-    }
+        Book::cacheQuery(now()->addHours(1))
+            ->appendCacheTags(['test'])
+            ->appendCacheTags(['test2'])
+            ->first();
 
-    /**
-     * @dataProvider strictModeContextProvider
-     */
-    public function test_multiple_append_cache_tags()
-    {
-        $post = factory(Post::class)->create();
-        $storedPostQuery = Post::cacheQuery(now()->addHours(1))->appendCacheTags(['test'])->appendCacheTags(['test2']);
-
-        $this->assertEquals($storedPostQuery->getQuery()->getCacheTags(), ['test', 'test2']);
+        $this->assertTrue($appendPassed);
     }
 
     /**
@@ -196,12 +225,13 @@ class MethodsTest extends TestCase
         $userAndPosts = User::cacheQuery(now()->addHours(1))
             ->withCount([
                 'posts' => function ($query) {
-                    $query->appendCacheTags(['posts'])
+                    $query->cacheQuery()
+                        ->appendCacheTags(['posts'])
                         ->where('name', 'like', '%topic 1%');
                 },
             ])
             ->appendCacheTags(['user']);
 
-        $this->assertEquals($userAndPosts->getQuery()->getCacheTags(), ['posts', 'user']);
+        $this->assertEquals(['user'], $userAndPosts->getCacheTags());
     }
 }

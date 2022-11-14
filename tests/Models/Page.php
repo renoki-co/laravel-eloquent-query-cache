@@ -11,25 +11,25 @@ class Page extends Model
 
     protected static $flushCacheOnUpdate = true;
 
-    protected $cacheUsePlainKey = true;
+    public $cacheUsePlainKey = true;
 
     protected $fillable = [
         'name',
     ];
 
-    protected function getCacheBaseTags(): array
+    public function getCacheBaseTags(): array
     {
         return [
             'test',
         ];
     }
 
-    protected function cacheUsePlainKeyValue()
+    public function cacheUsePlainKeyValue()
     {
         return $this->cacheUsePlainKey;
     }
 
-    protected function cacheForValue()
+    public function cacheForValue()
     {
         return 3600;
     }

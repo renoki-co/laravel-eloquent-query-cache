@@ -2,33 +2,70 @@
 
 namespace Rennokki\QueryCache\Test;
 
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Cache\Events\CacheHit;
+use Illuminate\Cache\Events\KeyWritten;
+use Illuminate\Support\Facades\Event;
 use Rennokki\QueryCache\Test\Models\Post;
 
-class PaginateTest extends TestCase
+class paginateTest extends TestCase
 {
     /**
      * @dataProvider strictModeContextProvider
      */
     public function test_paginate()
     {
+        /** @var KeyWritten|null $writeEvent */
+        $writeEvent = null;
+
+        /** @var CacheHit|null $hitEvent */
+        $hitEvent = null;
+
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writeEvent) {
+            if (str_contains($event->key, 'select * from "posts" limit 15')) {
+                $writeEvent = $event;
+
+                $this->assertSame([], $writeEvent->tags);
+                $this->assertEquals(3600, $writeEvent->seconds);
+            }
+        });
+
+        Event::listen(CacheHit::class, function (CacheHit $event) use (&$hitEvent, &$writeEvent) {
+            if (str_contains($event->key, 'select * from "posts" limit 15')) {
+                $hitEvent = $event;
+
+                $this->assertSame([], $hitEvent->tags);
+                $this->assertEquals($writeEvent->key, $hitEvent->key);
+            }
+        });
+
         $posts = factory(Post::class, 30)->create();
         $storedPosts = Post::cacheQuery(now()->addHours(1))->paginate(15);
-        $postsCount = $posts->count();
 
-        $totalCountCache = Cache::get('leqc:sqlitegetselect count(*) as aggregate from "posts"a:0:{}');
-        $postsCache = Cache::get('leqc:sqlitegetselect * from "posts" limit 15 offset 0a:0:{}');
-
-        $this->assertNotNull($totalCountCache);
-        $this->assertNotNull($postsCache);
+        $this->assertNotNull($writeEvent);
 
         $this->assertEquals(
-            $totalCountCache->first()->aggregate,
-            $postsCount
+            $storedPosts->items()[0]->id,
+            $posts->first()->id,
         );
 
-        $this->assertEquals(15, $postsCache->count());
-        $this->assertEquals(1, $postsCache->first()->id);
+        $this->assertEquals(
+            $storedPosts->items()[0]->id,
+            $writeEvent->value->first()->id,
+        );
+
+        $this->assertEquals(
+            $storedPosts->items()[0]->id,
+            $writeEvent->value->first()->id,
+        );
+
+        // Expect a cache hit this time.
+        $storedPostsFromCache = Post::cacheQuery(now()->addHours(1))->paginate(15);
+        $this->assertNotNull($hitEvent);
+
+        $this->assertEquals(
+            $storedPostsFromCache->items()[0]->id,
+            $storedPosts->items()[0]->id,
+        );
     }
 
     /**
@@ -36,26 +73,57 @@ class PaginateTest extends TestCase
      */
     public function test_paginate_with_columns()
     {
+        /** @var KeyWritten|null $writeEvent */
+        $writeEvent = null;
+
+        /** @var CacheHit|null $hitEvent */
+        $hitEvent = null;
+
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writeEvent) {
+            if (str_contains($event->key, 'select * from "posts" limit 15')) {
+                $writeEvent = $event;
+
+                $this->assertSame([], $writeEvent->tags);
+                $this->assertEquals(3600, $writeEvent->seconds);
+            }
+        });
+
+        Event::listen(CacheHit::class, function (CacheHit $event) use (&$hitEvent, &$writeEvent) {
+            if (str_contains($event->key, 'select * from "posts" limit 15')) {
+                $hitEvent = $event;
+
+                $this->assertSame([], $hitEvent->tags);
+                $this->assertEquals($writeEvent->key, $hitEvent->key);
+            }
+        });
+
         $posts = factory(Post::class, 30)->create();
         $storedPosts = Post::cacheQuery(now()->addHours(1))->paginate(15, ['name']);
-        $postsCount = $posts->count();
 
-        $totalCountCache = Cache::get('leqc:sqlitegetselect count(*) as aggregate from "posts"a:0:{}');
-        $postsCache = Cache::get('leqc:sqlitegetselect "name" from "posts" limit 15 offset 0a:0:{}');
-
-        $this->assertNotNull($totalCountCache);
-        $this->assertNotNull($postsCache);
+        $this->assertNotNull($writeEvent);
 
         $this->assertEquals(
-            $totalCountCache->first()->aggregate,
-            $postsCount
+            $storedPosts->items()[0]->name,
+            $posts->first()->name,
         );
 
-        $this->assertEquals(15, $postsCache->count());
+        $this->assertEquals(
+            $storedPosts->items()[0]->name,
+            $writeEvent->value->first()->name,
+        );
 
         $this->assertEquals(
-            $posts->first()->name,
-            $postsCache->first()->name
+            $storedPosts->items()[0]->name,
+            $writeEvent->value->first()->name,
+        );
+
+        // Expect a cache hit this time.
+        $storedPostsFromCache = Post::cacheQuery(now()->addHours(1))->paginate(15, ['name']);
+        $this->assertNotNull($hitEvent);
+
+        $this->assertEquals(
+            $storedPostsFromCache->items()[0]->name,
+            $storedPosts->items()[0]->name,
         );
     }
 }

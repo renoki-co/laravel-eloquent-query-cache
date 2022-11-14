@@ -2,6 +2,10 @@
 
 namespace Rennokki\QueryCache\Test;
 
+use Illuminate\Cache\Events\CacheHit;
+use Illuminate\Cache\Events\KeyWritten;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
 use Rennokki\QueryCache\Test\Models\Page;
 
 class FlushCacheOnUpdateTest extends TestCase
@@ -11,24 +15,29 @@ class FlushCacheOnUpdateTest extends TestCase
      */
     public function test_flush_cache_on_create()
     {
-        $page = factory(Page::class)->create();
-        $storedPage = Page::cacheQuery(now()->addHours(1))->first();
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
+        /** @var KeyWritten|null $writeEvent */
+        $writeEvent = null;
 
-        $this->assertNotNull($cache);
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writeEvent) {
+            $writeEvent = $event;
 
-        $this->assertEquals(
-            $cache->first()->id,
-            $storedPage->id
-        );
+            $this->assertSame(['test'], $writeEvent->tags);
+            $this->assertEquals(3600, $writeEvent->seconds);
 
-        Page::create([
-            'name' => '9GAG',
-        ]);
+            $this->assertStringContainsString(
+                'select * from "pages" limit 1',
+                $writeEvent->key,
+            );
+        });
 
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
+        factory(Page::class)->create();
+        Page::cacheQuery(now()->addHours(1))->first();
 
-        $this->assertNull($cache);
+        $this->assertNotNull($writeEvent);
+
+        Page::create(['name' => '9GAG']);
+
+        $this->assertNull(Cache::tags(['test'])->get($writeEvent->key));
     }
 
     /**
@@ -36,24 +45,29 @@ class FlushCacheOnUpdateTest extends TestCase
      */
     public function test_flush_cache_on_update()
     {
-        $page = factory(Page::class)->create();
-        $storedPage = Page::cacheQuery(now()->addHours(1))->first();
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
+        /** @var KeyWritten|null $writeEvent */
+        $writeEvent = null;
 
-        $this->assertNotNull($cache);
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writeEvent) {
+            $writeEvent = $event;
 
-        $this->assertEquals(
-            $cache->first()->id,
-            $storedPage->id
-        );
+            $this->assertSame(['test'], $writeEvent->tags);
+            $this->assertEquals(3600, $writeEvent->seconds);
 
-        $page->update([
-            'name' => '9GAG',
-        ]);
+            $this->assertStringContainsString(
+                'select * from "pages" limit 1',
+                $writeEvent->key,
+            );
+        });
 
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
+        factory(Page::class)->create();
+        $page = Page::cacheQuery(now()->addHours(1))->first();
 
-        $this->assertNull($cache);
+        $this->assertNotNull($writeEvent);
+
+        $page->update(['name' => '9GAG']);
+
+        $this->assertNull(Cache::tags(['test'])->get($writeEvent->key));
     }
 
     /**
@@ -61,22 +75,29 @@ class FlushCacheOnUpdateTest extends TestCase
      */
     public function test_flush_cache_on_delete()
     {
-        $page = factory(Page::class)->create();
-        $storedPage = Page::cacheQuery(now()->addHours(1))->first();
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
+        /** @var KeyWritten|null $writeEvent */
+        $writeEvent = null;
 
-        $this->assertNotNull($cache);
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writeEvent) {
+            $writeEvent = $event;
 
-        $this->assertEquals(
-            $cache->first()->id,
-            $storedPage->id
-        );
+            $this->assertSame(['test'], $writeEvent->tags);
+            $this->assertEquals(3600, $writeEvent->seconds);
+
+            $this->assertStringContainsString(
+                'select * from "pages" limit 1',
+                $writeEvent->key,
+            );
+        });
+
+        factory(Page::class)->create();
+        $page = Page::cacheQuery(now()->addHours(1))->first();
+
+        $this->assertNotNull($writeEvent);
 
         $page->delete();
 
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
-
-        $this->assertNull($cache);
+        $this->assertNull(Cache::tags(['test'])->get($writeEvent->key));
     }
 
     /**
@@ -84,21 +105,28 @@ class FlushCacheOnUpdateTest extends TestCase
      */
     public function test_flush_cache_on_force_deletion()
     {
-        $page = factory(Page::class)->create();
-        $storedPage = Page::cacheQuery(now()->addHours(1))->first();
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
+        /** @var KeyWritten|null $writeEvent */
+        $writeEvent = null;
 
-        $this->assertNotNull($cache);
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writeEvent) {
+            $writeEvent = $event;
 
-        $this->assertEquals(
-            $cache->first()->id,
-            $storedPage->id
-        );
+            $this->assertSame(['test'], $writeEvent->tags);
+            $this->assertEquals(3600, $writeEvent->seconds);
+
+            $this->assertStringContainsString(
+                'select * from "pages" limit 1',
+                $writeEvent->key,
+            );
+        });
+
+        factory(Page::class)->create();
+        $page = Page::cacheQuery(now()->addHours(1))->first();
+
+        $this->assertNotNull($writeEvent);
 
         $page->forceDelete();
 
-        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
-
-        $this->assertNull($cache);
+        $this->assertNull(Cache::tags(['test'])->get($writeEvent->key));
     }
 }

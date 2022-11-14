@@ -2,7 +2,9 @@
 
 namespace Rennokki\QueryCache\Test;
 
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Cache\Events\CacheHit;
+use Illuminate\Cache\Events\KeyWritten;
+use Illuminate\Support\Facades\Event;
 use Rennokki\QueryCache\Test\Models\Post;
 
 class FirstTest extends TestCase
@@ -12,15 +14,58 @@ class FirstTest extends TestCase
      */
     public function test_first()
     {
-        $post = factory(Post::class)->create();
-        $storedPost = Post::cacheQuery(now()->addHours(1))->first();
-        $cache = Cache::get('leqc:sqlitegetselect * from "posts" limit 1a:0:{}');
+        /** @var KeyWritten|null $writeEvent */
+        $writeEvent = null;
 
-        $this->assertNotNull($cache);
+        /** @var CacheHit|null $hitEvent */
+        $hitEvent = null;
+
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writeEvent) {
+            $writeEvent = $event;
+
+            $this->assertSame([], $writeEvent->tags);
+            $this->assertEquals(3600, $writeEvent->seconds);
+
+            $this->assertStringContainsString(
+                'select * from "posts" limit 1',
+                $writeEvent->key,
+            );
+        });
+
+        Event::listen(CacheHit::class, function (CacheHit $event) use (&$hitEvent, &$writeEvent) {
+            $hitEvent = $event;
+
+            $this->assertSame([], $hitEvent->tags);
+            $this->assertEquals($writeEvent->key, $hitEvent->key);
+        });
+
+        $posts = factory(Post::class, 30)->create();
+        $storedPost = Post::cacheQuery(now()->addHours(1))->first();
+
+        $this->assertNotNull($writeEvent);
 
         $this->assertEquals(
-            $cache->first()->id,
-            $storedPost->id
+            $storedPost->id,
+            $posts->first()->id,
+        );
+
+        $this->assertEquals(
+            $storedPost->id,
+            $writeEvent->value->first()->id,
+        );
+
+        $this->assertEquals(
+            $storedPost->id,
+            $writeEvent->value->first()->id,
+        );
+
+        // Expect a cache hit this time.
+        $storedPostFromCache = Post::cacheQuery(now()->addHours(1))->first();
+        $this->assertNotNull($hitEvent);
+
+        $this->assertEquals(
+            $storedPostFromCache->id,
+            $storedPost->id,
         );
     }
 
@@ -29,15 +74,118 @@ class FirstTest extends TestCase
      */
     public function test_first_with_columns()
     {
-        $post = factory(Post::class)->create();
-        $storedPost = Post::cacheQuery(now()->addHours(1))->first(['name']);
-        $cache = Cache::get('leqc:sqlitegetselect "name" from "posts" limit 1a:0:{}');
+        /** @var KeyWritten|null $writeEvent */
+        $writeEvent = null;
 
-        $this->assertNotNull($cache);
+        /** @var CacheHit|null $hitEvent */
+        $hitEvent = null;
+
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writeEvent) {
+            $writeEvent = $event;
+
+            $this->assertSame([], $writeEvent->tags);
+            $this->assertEquals(3600, $writeEvent->seconds);
+
+            $this->assertStringContainsString(
+                'select * from "posts" limit 1',
+                $writeEvent->key,
+            );
+        });
+
+        Event::listen(CacheHit::class, function (CacheHit $event) use (&$hitEvent, &$writeEvent) {
+            $hitEvent = $event;
+
+            $this->assertSame([], $hitEvent->tags);
+            $this->assertEquals($writeEvent->key, $hitEvent->key);
+        });
+
+        $posts = factory(Post::class, 30)->create();
+        $storedPost = Post::cacheQuery(now()->addHours(1))->first(['name']);
+
+        $this->assertNotNull($writeEvent);
 
         $this->assertEquals(
-            $cache->first()->name,
-            $storedPost->name
+            $storedPost->name,
+            $posts->first()->name,
+        );
+
+        $this->assertEquals(
+            $storedPost->name,
+            $writeEvent->value->first()->name,
+        );
+
+        $this->assertEquals(
+            $storedPost->name,
+            $writeEvent->value->first()->name,
+        );
+
+        // Expect a cache hit this time.
+        $storedPostFromCache = Post::cacheQuery(now()->addHours(1))->first(['name']);
+        $this->assertNotNull($hitEvent);
+
+        $this->assertEquals(
+            $storedPostFromCache->name,
+            $storedPost->name,
+        );
+    }
+
+    /**
+     * @dataProvider strictModeContextProvider
+     */
+    public function test_first_with_string_columns()
+    {
+        /** @var KeyWritten|null $writeEvent */
+        $writeEvent = null;
+
+        /** @var CacheHit|null $hitEvent */
+        $hitEvent = null;
+
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writeEvent) {
+            $writeEvent = $event;
+
+            $this->assertSame([], $writeEvent->tags);
+            $this->assertEquals(3600, $writeEvent->seconds);
+
+            $this->assertStringContainsString(
+                'select * from "posts" limit 1',
+                $writeEvent->key,
+            );
+        });
+
+        Event::listen(CacheHit::class, function (CacheHit $event) use (&$hitEvent, &$writeEvent) {
+            $hitEvent = $event;
+
+            $this->assertSame([], $hitEvent->tags);
+            $this->assertEquals($writeEvent->key, $hitEvent->key);
+        });
+
+        $posts = factory(Post::class, 30)->create();
+        $storedPost = Post::cacheQuery(now()->addHours(1))->first('name');
+
+        $this->assertNotNull($writeEvent);
+
+        $this->assertEquals(
+            $storedPost->name,
+            $posts->first()->name,
+        );
+
+        $this->assertEquals(
+            $storedPost->name,
+            $writeEvent->value->first()->name,
+        );
+
+        $this->assertEquals(
+            $storedPost->name,
+            $writeEvent->value->first()->name,
+        );
+
+        // Expect a cache hit this time.
+        $storedPostFromCache = Post::cacheQuery(now()->addHours(1))->first('name');
+        $this->assertNotNull($hitEvent);
+
+        $this->assertEquals(
+            $storedPostFromCache->name,
+            $storedPost->name,
         );
     }
 }

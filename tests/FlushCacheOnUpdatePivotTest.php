@@ -2,6 +2,8 @@
 
 namespace Rennokki\QueryCache\Test;
 
+use Illuminate\Support\Facades\Event;
+use Illuminate\Cache\Events\KeyWritten;
 use Rennokki\QueryCache\Test\Models\Role;
 use Rennokki\QueryCache\Test\Models\User;
 
@@ -12,29 +14,57 @@ class FlushCacheOnUpdatePivotTest extends TestCase
      */
     public function test_belongs_to_many()
     {
-        $key = 'leqc:sqlitegetselect "roles".*, "role_user"."user_id" as "pivot_user_id", "role_user"."role_id" as "pivot_role_id" from "roles" inner join "role_user" on "roles"."id" = "role_user"."role_id" where "role_user"."user_id" = ? limit 1a:1:{i:0;i:1;}';
+        $hasRole = false;
 
         $user = factory(User::class)->create();
         $role = factory(Role::class)->create();
-        $storedRoles = $user->roles()->cacheFor(now()->addHours(1))->cacheTags(["user:{$user->id}:roles"])->get();
-        $cache = $this->getCacheWithTags($key, ["user:{$user->id}:roles"]);
 
-        $this->assertNull($cache);
-        $this->assertEquals(0, $storedRoles->count());
+        Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$hasRole, $user) {
+            if ($hasRole) {
+                $this->assertEquals(
+                    $user->roles()->first()->id,
+                    $event->value->first()?->id,
+                );
+            } else {
+                $this->assertNull($user->roles()->first());
+                $this->assertNull($event->value->first());
+            }
+
+            $this->assertEquals(['user:1:roles'], $event->tags);
+            $this->assertStringContainsString(
+                'inner join "role_user"',
+                $event->key,
+            );
+        });
+
+        $userRoles = $user->roles()
+            ->cacheFor(now()->addHours(1))
+            ->cacheTags(["user:{$user->id}:roles"])
+            ->get();
+
+        $this->assertEquals(0, $userRoles->count());
 
         $user->roles()->attach($role->id);
+        $hasRole = $user->roles()->count() > 0;
 
-        $storedRoles = $user->roles()->cacheFor(now()->addHours(1))->cacheTags(["user:{$user->id}:roles"])->get();
+        $userRolesAfterAttach = $user->roles()
+            ->cacheFor(now()->addHours(1))
+            ->cacheTags(["user:{$user->id}:roles"])
+            ->get();
 
         $this->assertEquals(
             $role->id,
-            $storedRoles->first()->id
+            $userRolesAfterAttach->first()->id
         );
 
         $user->roles()->detach($role->id);
+        $hasRole = $user->roles()->count() > 0;
 
-        $storedRoles = $user->roles()->cacheFor(now()->addHours(1))->cacheTags(["user:{$user->id}:roles"])->get();
+        $userRolesAfterDetach = $user->roles()
+            ->cacheFor(now()->addHours(1))
+            ->cacheTags(["user:{$user->id}:roles"])
+            ->get();
 
-        $this->assertEquals(0, $storedRoles->count());
+        $this->assertEquals(0, $userRolesAfterDetach->count());
     }
 }
