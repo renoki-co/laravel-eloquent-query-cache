@@ -25,7 +25,7 @@ class EloquentFlushCacheOnUpdateTest extends EloquentTestCase
                 $this->assertSame(['test'], $writeEvent->tags);
             }
 
-            $this->assertEquals(3600, $writeEvent->seconds);
+            $this->assertTrue(3600 >= $writeEvent->seconds);
 
             $this->assertStringContainsString(
                 'select * from "pages" limit 1',
@@ -62,7 +62,7 @@ class EloquentFlushCacheOnUpdateTest extends EloquentTestCase
                 $this->assertSame(['test'], $writeEvent->tags);
             }
 
-            $this->assertEquals(3600, $writeEvent->seconds);
+            $this->assertTrue(3600 >= $writeEvent->seconds);
 
             $this->assertStringContainsString(
                 'select * from "pages" limit 1',
@@ -99,7 +99,7 @@ class EloquentFlushCacheOnUpdateTest extends EloquentTestCase
                 $this->assertSame(['test'], $writeEvent->tags);
             }
 
-            $this->assertEquals(3600, $writeEvent->seconds);
+            $this->assertTrue(3600 >= $writeEvent->seconds);
 
             $this->assertStringContainsString(
                 'select * from "pages" limit 1',
@@ -136,7 +136,7 @@ class EloquentFlushCacheOnUpdateTest extends EloquentTestCase
                 $this->assertSame(['test'], $writeEvent->tags);
             }
 
-            $this->assertEquals(3600, $writeEvent->seconds);
+            $this->assertTrue(3600 >= $writeEvent->seconds);
 
             $this->assertStringContainsString(
                 'select * from "pages" limit 1',

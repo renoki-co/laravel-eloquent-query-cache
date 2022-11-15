@@ -24,7 +24,7 @@ class EloquentFirstTest extends EloquentTestCase
             $writeEvent = $event;
 
             $this->assertSame([], $writeEvent->tags);
-            $this->assertEquals(3600, $writeEvent->seconds);
+            $this->assertTrue(3600 >= $writeEvent->seconds);
 
             $this->assertStringContainsString(
                 'select * from "posts" limit 1',
@@ -84,7 +84,7 @@ class EloquentFirstTest extends EloquentTestCase
             $writeEvent = $event;
 
             $this->assertSame([], $writeEvent->tags);
-            $this->assertEquals(3600, $writeEvent->seconds);
+            $this->assertTrue(3600 >= $writeEvent->seconds);
 
             $this->assertStringContainsString(
                 'select * from "posts" limit 1',
@@ -144,7 +144,7 @@ class EloquentFirstTest extends EloquentTestCase
             $writeEvent = $event;
 
             $this->assertSame([], $writeEvent->tags);
-            $this->assertEquals(3600, $writeEvent->seconds);
+            $this->assertTrue(3600 >= $writeEvent->seconds);
 
             $this->assertStringContainsString(
                 'select * from "posts" limit 1',

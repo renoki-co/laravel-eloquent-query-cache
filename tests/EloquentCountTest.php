@@ -24,7 +24,7 @@ class EloquentCountTest extends EloquentTestCase
             $writeEvent = $event;
 
             $this->assertSame([], $writeEvent->tags);
-            $this->assertEquals(3600, $writeEvent->seconds);
+            $this->assertTrue(3600 >= $writeEvent->seconds);
 
             $this->assertStringContainsString(
                 'select count(*) as aggregate from "posts"',
@@ -84,7 +84,7 @@ class EloquentCountTest extends EloquentTestCase
             $writeEvent = $event;
 
             $this->assertSame([], $writeEvent->tags);
-            $this->assertEquals(3600, $writeEvent->seconds);
+            $this->assertTrue(3600 >= $writeEvent->seconds);
 
             $this->assertStringContainsString(
                 'select count("name") as aggregate from "posts"',

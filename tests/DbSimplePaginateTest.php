@@ -25,7 +25,7 @@ class DbSimplePaginateTest extends DbTestCase
             $writeEvent = $event;
 
             $this->assertSame([], $writeEvent->tags);
-            $this->assertEquals(3600, $writeEvent->seconds);
+            $this->assertTrue(3600 >= $writeEvent->seconds);
 
             $this->assertStringContainsString(
                 'select * from "posts" limit 16',
@@ -85,7 +85,7 @@ class DbSimplePaginateTest extends DbTestCase
             $writeEvent = $event;
 
             $this->assertSame([], $writeEvent->tags);
-            $this->assertEquals(3600, $writeEvent->seconds);
+            $this->assertTrue(3600 >= $writeEvent->seconds);
 
             $this->assertStringContainsString(
                 'select * from "posts" limit 16',
