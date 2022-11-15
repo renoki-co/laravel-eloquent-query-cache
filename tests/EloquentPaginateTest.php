@@ -7,10 +7,10 @@ use Illuminate\Cache\Events\KeyWritten;
 use Illuminate\Support\Facades\Event;
 use Rennokki\QueryCache\Test\Models\Post;
 
-class paginateTest extends TestCase
+class EloquentPaginateTest extends EloquentTestCase
 {
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_paginate()
     {
@@ -69,7 +69,7 @@ class paginateTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_paginate_with_columns()
     {

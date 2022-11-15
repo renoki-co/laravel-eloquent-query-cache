@@ -7,10 +7,10 @@ use Illuminate\Cache\Events\KeyWritten;
 use Illuminate\Support\Facades\Event;
 use Rennokki\QueryCache\Test\Models\Post;
 
-class GetTest extends TestCase
+class EloquentGetTest extends EloquentTestCase
 {
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_get()
     {
@@ -70,7 +70,7 @@ class GetTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_get_with_columns()
     {
@@ -130,7 +130,7 @@ class GetTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_get_with_string_columns()
     {

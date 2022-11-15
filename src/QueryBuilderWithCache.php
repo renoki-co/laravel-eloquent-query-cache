@@ -46,7 +46,9 @@ class QueryBuilderWithCache extends QueryBuilder implements QueryCacheModuleInte
 
         foreach ($propertiesToPull as $property) {
             if ($property->isStatic()) {
-                // TODO: Set static::{$property->name} = $builder::{$property->name};
+                // dump($property);
+                // $name = $property->name;
+                // TODO: static::${$name} = $builder::${$name};
                 continue;
             }
 
@@ -55,19 +57,28 @@ class QueryBuilderWithCache extends QueryBuilder implements QueryCacheModuleInte
 
         $builderWithCache->setQueryBuilder($builder);
 
-        // When used with underlying Eloquent, seek within the model for variables
-        // that build the values for the cache module.
-        if ($model) {
-            $attributesToSeek = [
-                'cacheFor',
-                'cacheTags',
-                'cachePrefix',
-                'cacheDriver',
-                'cacheUsePlainKey',
-                'cacheUsePreviousKeyFingerprint',
-            ];
+        // These are the names for custom model properties, model methods
+        // and global static properties.
+        $attributesToSeek = [
+            'cacheFor',
+            'cacheTags',
+            'cachePrefix',
+            'cacheDriver',
+            'cacheUsePlainKey',
+            'cacheUsePreviousKeyGenerationMethod',
+            'avoidCache',
+        ];
 
-            foreach ($attributesToSeek as $attr) {
+        // For raw query builder, we also need to seek for cacheBaseTags,
+        // if declared globally through QueryCache::cacheBaseTags([])
+        if (! $model) {
+            $attributesToSeek[] = 'cacheBaseTags';
+        }
+
+        foreach ($attributesToSeek as $attr) {
+            if ($model) {
+                // When used with underlying Eloquent, seek within the model for variables
+                // that build the values for the cache module.
                 $function = "{$attr}Value";
 
                 if (property_exists($model, $attr)) {
@@ -79,6 +90,11 @@ class QueryBuilderWithCache extends QueryBuilder implements QueryCacheModuleInte
                         $model->{$function}($builderWithCache)
                     );
                 }
+            }
+
+            // When global attributes are being set, write them to the builder.
+            if (! is_null($value = QueryCache::getOption($attr))) {
+                $builderWithCache->{$attr}($value);
             }
         }
 

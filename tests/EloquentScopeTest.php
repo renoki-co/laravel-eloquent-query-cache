@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Support\Facades\Event;
 use Rennokki\QueryCache\Test\Models\Post;
 
-class ScopeTest extends TestCase
+class EloquentScopeTest extends EloquentTestCase
 {
     /**
      * {@inheritdoc}

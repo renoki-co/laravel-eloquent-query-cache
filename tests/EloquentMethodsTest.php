@@ -7,15 +7,17 @@ use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Cache\Events\KeyWritten;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Rennokki\QueryCache\Test\Models\Kid;
 use Rennokki\QueryCache\Test\Models\Book;
+use Rennokki\QueryCache\Test\Models\Page;
 use Rennokki\QueryCache\Test\Models\Post;
 use Rennokki\QueryCache\Test\Models\User;
 
-class MethodsTest extends TestCase
+class EloquentMethodsTest extends EloquentTestCase
 {
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_do_not_cache()
     {
@@ -32,7 +34,7 @@ class MethodsTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_cache_prefix()
     {
@@ -58,7 +60,7 @@ class MethodsTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_cache_tags()
     {
@@ -90,7 +92,7 @@ class MethodsTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_cache_flush_with_the_right_tag()
     {
@@ -122,9 +124,9 @@ class MethodsTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
-    public function test_cache_flush_with_other_tag()
+    public function test_cache_doesnt_flush_with_other_tags()
     {
         $flushPassed = false;
 
@@ -158,7 +160,7 @@ class MethodsTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_cache_flush_without_specifying_cache_tags()
     {
@@ -192,7 +194,7 @@ class MethodsTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_cache_flush_without_specifying_the_base_tags()
     {
@@ -226,7 +228,7 @@ class MethodsTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_hashed_key()
     {
@@ -248,7 +250,7 @@ class MethodsTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_append_cache_tags()
     {
@@ -273,7 +275,7 @@ class MethodsTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_append_cache_tags_with_sub_query()
     {
@@ -296,5 +298,43 @@ class MethodsTest extends TestCase
             ->appendCacheTags(['user']);
 
         $this->assertEquals(['user'], $userAndPosts->getCacheTags());
+    }
+
+    /**
+     * @dataProvider eloquentContextProvider
+     */
+    public function test_macros_transfer()
+    {
+        EloquentBuilder::macro('customEloquent', function () {
+            /** @var QueryBuilder $this */
+            return $this->where('name', '9GAG');
+        });
+
+        $this->assertStringContainsString(
+            'from "pages" where "name" = ?',
+            Page::customEloquent()->toSql(),
+        );
+
+        $this->assertStringContainsString(
+            'from "pages" where "name" = ?',
+            Page::cacheQuery()->customEloquent()->toSql(),
+        );
+
+        $this->assertStringContainsString(
+            'from "pages" where "name" = ?',
+            Page::customEloquent()->cacheQuery()->toSql(),
+        );
+    }
+
+    /**
+     * @dataProvider eloquentContextProvider
+     */
+    public function test_writing_with_cache_should_not_crash()
+    {
+        Post::cacheQuery()->create([
+            'name' => 'Example Post',
+        ]);
+
+        $this->assertCount(1, Post::get());
     }
 }

@@ -29,7 +29,7 @@ trait QueryCacheModule
      *
      * @var null|array
      */
-    protected $cacheBaseTags = null;
+    protected $cacheBaseTags = [];
 
     /**
      * The cache driver to be used.
@@ -48,18 +48,18 @@ trait QueryCacheModule
 
     /**
      * Specify if the key that should be used when caching the query
-     * need to be plain or be hashed.
+     * need to be plain instead of being hashed.
      *
      * @var bool
      */
     protected $cacheUsePlainKey = false;
 
     /**
-     * Specify if the key generation should work like in 3.x
+     * Specify if the cache key generation method should work like in 3.x
      *
      * @var bool
      */
-    protected $cacheUsePreviousKeyFingerprint = false;
+    protected $cacheUsePreviousKeyGenerationMethod = false;
 
     /**
      * Set if the caching should be avoided.
@@ -164,7 +164,7 @@ trait QueryCacheModule
         $connection = $this->getConnection();
         $name = $connection->getName();
 
-        if ($this->shouldUsePreviousKeyFingerprint()) {
+        if ($this->shouldUsePreviousKeyGenerationMethod()) {
             return $method === 'count'
                 ? $name.$method.$id.serialize($this->getBindings()).$appends
                 : $name.$method.$id.$this->toSql().serialize($this->getBindings()).$appends;
@@ -176,7 +176,7 @@ trait QueryCacheModule
             $method,
             collect($columns)->join(':'),
             $id,
-            $method === 'count' ? null : $this->toSql(),
+            $this->toSql(),
             collect($this->getBindings())->map(fn ($v, $k) => "{$k}:{$v}")->join(';'),
             $appends,
         );
@@ -228,7 +228,7 @@ trait QueryCacheModule
      * Indicate that the query results should be cached.
      *
      * @param  \DateTime|int|null  $time
-     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
+     * @return $this
      */
     public function cacheFor($time)
     {
@@ -287,7 +287,7 @@ trait QueryCacheModule
      * Set the cache prefix.
      *
      * @param  string  $prefix
-     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
+     * @return $this
      */
     public function cachePrefix(string $prefix)
     {
@@ -300,7 +300,7 @@ trait QueryCacheModule
      * Attach tags to the cache.
      *
      * @param  array  $cacheTags
-     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
+     * @return $this
      */
     public function cacheTags(array $cacheTags = [])
     {
@@ -313,7 +313,7 @@ trait QueryCacheModule
      * Append tags to the cache.
      *
      * @param  array  $cacheTags
-     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
+     * @return $this
      */
     public function appendCacheTags(array $cacheTags = [])
     {
@@ -326,7 +326,7 @@ trait QueryCacheModule
      * Use a specific cache driver.
      *
      * @param  string  $cacheDriver
-     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
+     * @return $this
      */
     public function cacheDriver(string $cacheDriver)
     {
@@ -340,7 +340,7 @@ trait QueryCacheModule
      * that will be present on all cached queries.
      *
      * @param  array  $tags
-     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
+     * @return $this
      */
     public function cacheBaseTags(array $tags = [])
     {
@@ -350,10 +350,10 @@ trait QueryCacheModule
     }
 
     /**
-     * Use a plain key instead of a hashed one in the cache driver.
+     * Use a plain key instead of a hashed one, in the cache driver.
      *
      * @param  bool  $usePlainKey
-     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
+     * @return $this
      */
     public function withPlainKey(bool $usePlainKey = true)
     {
@@ -366,7 +366,7 @@ trait QueryCacheModule
      * Alias for withPlainKey().
      *
      * @param  bool  $usePlainKey
-     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
+     * @return $this
      */
     public function cacheUsePlainKey(bool $usePlainKey = true)
     {
@@ -374,15 +374,15 @@ trait QueryCacheModule
     }
 
     /**
-     * Specify the cache key generation fingerprint should be still used
+     * Specify that the cache key generation method should be still used
      * as in the prev. version (3.x).
      *
-     * @param  bool  $usePreviousKeyFingerprint
-     * @return \Rennokki\QueryCache\Traits\QueryCacheModule
+     * @param  bool  $usePreviousKeyGenerationMethod
+     * @return $this
      */
-    public function cacheUsePreviousKeyFingerprint(bool $usePreviousKeyFingerprint = true)
+    public function cacheUsePreviousKeyGenerationMethod(bool $usePreviousKeyGenerationMethod = true)
     {
-        $this->cacheUsePreviousKeyFingerprint = $usePreviousKeyFingerprint;
+        $this->cacheUsePreviousKeyGenerationMethod = $usePreviousKeyGenerationMethod;
 
         return $this;
     }
@@ -421,10 +421,11 @@ trait QueryCacheModule
      */
     public function computeTags(): array
     {
-        return array_merge(
-            $this->getCacheTags() ?: [],
-            $this->getCacheBaseTags() ?: []
-        );
+        return collect()
+            ->merge($this->getCacheTags() ?: [])
+            ->merge($this->getCacheBaseTags() ?: [])
+            ->unique()
+            ->all();
     }
 
     /**
@@ -449,14 +450,14 @@ trait QueryCacheModule
     }
 
     /**
-     * Check if the fingerprint generation for the keys
+     * Check if the method generation method for the cache keys
      * should be the same as in prev. version. (3.x)
      *
      * @return bool
      */
-    public function shouldUsePreviousKeyFingerprint(): bool
+    public function shouldUsePreviousKeyGenerationMethod(): bool
     {
-        return $this->cacheUsePreviousKeyFingerprint;
+        return $this->cacheUsePreviousKeyGenerationMethod;
     }
 
     /**

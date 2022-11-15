@@ -4,15 +4,17 @@ namespace Rennokki\QueryCache\Test;
 
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\KeyWritten;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Rennokki\QueryCache\QueryCache;
 use Rennokki\QueryCache\Test\Models\Post;
 
-class CountTest extends TestCase
+class DbCountTest extends DbTestCase
 {
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider databaseContextProvider
      */
-    public function test_count()
+    public function test_raw_db_with_count()
     {
         /** @var KeyWritten|null $writeEvent */
         $writeEvent = null;
@@ -40,7 +42,10 @@ class CountTest extends TestCase
         });
 
         $posts = factory(Post::class, 5)->create();
-        $postsCount = Post::cacheQuery(now()->addHours(1))->count();
+
+        $postsCount = DB::table('posts')
+            ->cacheQuery(now()->addHours(1))
+            ->count();
 
         $this->assertNotNull($writeEvent);
 
@@ -60,7 +65,10 @@ class CountTest extends TestCase
         );
 
         // Expect a cache hit this time.
-        $postsCountFromCache = Post::cacheQuery(now()->addHours(1))->count();
+        $postsCountFromCache = DB::table('posts')
+            ->cacheQuery(now()->addHours(1))
+            ->count();
+
         $this->assertNotNull($hitEvent);
 
         $this->assertEquals(
@@ -70,9 +78,9 @@ class CountTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider databaseContextProvider
      */
-    public function test_count_with_columns()
+    public function test_raw_db_with_count_with_columns()
     {
         /** @var KeyWritten|null $writeEvent */
         $writeEvent = null;
@@ -100,7 +108,10 @@ class CountTest extends TestCase
         });
 
         $posts = factory(Post::class, 5)->create();
-        $postsCount = Post::cacheQuery(now()->addHours(1))->count(['name']);
+
+        $postsCount = DB::table('posts')
+            ->cacheQuery(now()->addHours(1))
+            ->count(['name']);
 
         $this->assertNotNull($writeEvent);
 
@@ -120,7 +131,10 @@ class CountTest extends TestCase
         );
 
         // Expect a cache hit this time.
-        $postsCountFromCache = Post::cacheQuery(now()->addHours(1))->count(['name']);
+        $postsCountFromCache = DB::table('posts')
+            ->cacheQuery(now()->addHours(1))
+            ->count(['name']);
+
         $this->assertNotNull($hitEvent);
 
         $this->assertEquals(

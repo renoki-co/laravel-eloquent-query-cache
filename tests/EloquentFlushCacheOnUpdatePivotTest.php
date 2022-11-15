@@ -7,10 +7,10 @@ use Illuminate\Cache\Events\KeyWritten;
 use Rennokki\QueryCache\Test\Models\Role;
 use Rennokki\QueryCache\Test\Models\User;
 
-class FlushCacheOnUpdatePivotTest extends TestCase
+class EloquentFlushCacheOnUpdatePivotTest extends EloquentTestCase
 {
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_belongs_to_many()
     {

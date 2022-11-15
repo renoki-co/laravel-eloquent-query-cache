@@ -6,10 +6,10 @@ use Livewire\Component;
 use Livewire\Livewire;
 use Rennokki\QueryCache\Test\Models\Post;
 
-class LivewireTest extends TestCase
+class EloquentLivewireTest extends EloquentTestCase
 {
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_livewire_component_poll_doesnt_break_when_callback_is_already_set()
     {

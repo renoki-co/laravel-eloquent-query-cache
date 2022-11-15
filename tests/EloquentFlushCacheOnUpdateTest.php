@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Rennokki\QueryCache\Test\Models\Page;
 
-class FlushCacheOnUpdateTest extends TestCase
+class EloquentFlushCacheOnUpdateTest extends EloquentTestCase
 {
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_flush_cache_on_create()
     {
@@ -48,7 +48,7 @@ class FlushCacheOnUpdateTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_flush_cache_on_update()
     {
@@ -85,7 +85,7 @@ class FlushCacheOnUpdateTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_flush_cache_on_delete()
     {
@@ -122,7 +122,7 @@ class FlushCacheOnUpdateTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider eloquentContextProvider
      */
     public function test_flush_cache_on_force_deletion()
     {

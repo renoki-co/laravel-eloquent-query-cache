@@ -2,9 +2,8 @@
 
 namespace Rennokki\QueryCache\Test;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Rennokki\QueryCache\QueryCache;
 
 abstract class TestCase extends Orchestra
 {
@@ -15,11 +14,6 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
-        if ($this->getProvidedData() && method_exists(Model::class, 'preventAccessingMissingAttributes')) {
-            [$strict] = $this->getProvidedData();
-            Model::preventAccessingMissingAttributes($strict);
-        }
-
         $this->resetDatabase();
 
         $this->loadLaravelMigrations(['--database' => 'sqlite']);
@@ -28,8 +22,10 @@ abstract class TestCase extends Orchestra
         $this->withFactories(__DIR__.'/database/factories');
 
         $this->artisan('migrate', ['--database' => 'sqlite']);
-
         $this->clearCache();
+
+        QueryCache::reset();
+        QueryCache::cacheUsePlainKey(true);
     }
 
     /**
@@ -102,11 +98,5 @@ abstract class TestCase extends Orchestra
     protected function driverSupportsTags(): bool
     {
         return ! in_array(config('cache.driver'), ['file', 'database']);
-    }
-
-    public function strictModeContextProvider(): iterable
-    {
-        yield [true];
-        yield [false];
     }
 }

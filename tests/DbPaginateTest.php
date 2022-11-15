@@ -4,15 +4,16 @@ namespace Rennokki\QueryCache\Test;
 
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\KeyWritten;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Rennokki\QueryCache\Test\Models\Post;
 
-class SimplePaginateTest extends TestCase
+class DbPaginateTest extends DbTestCase
 {
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider databaseContextProvider
      */
-    public function test_simple_paginate()
+    public function test_paginate()
     {
         /** @var KeyWritten|null $writeEvent */
         $writeEvent = null;
@@ -21,26 +22,25 @@ class SimplePaginateTest extends TestCase
         $hitEvent = null;
 
         Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writeEvent) {
-            $writeEvent = $event;
+            if (str_contains($event->key, 'select * from "posts" limit 15')) {
+                $writeEvent = $event;
 
-            $this->assertSame([], $writeEvent->tags);
-            $this->assertEquals(3600, $writeEvent->seconds);
-
-            $this->assertStringContainsString(
-                'select * from "posts" limit 16',
-                $writeEvent->key,
-            );
+                $this->assertSame([], $writeEvent->tags);
+                $this->assertEquals(3600, $writeEvent->seconds);
+            }
         });
 
         Event::listen(CacheHit::class, function (CacheHit $event) use (&$hitEvent, &$writeEvent) {
-            $hitEvent = $event;
+            if (str_contains($event->key, 'select * from "posts" limit 15')) {
+                $hitEvent = $event;
 
-            $this->assertSame([], $hitEvent->tags);
-            $this->assertEquals($writeEvent->key, $hitEvent->key);
+                $this->assertSame([], $hitEvent->tags);
+                $this->assertEquals($writeEvent->key, $hitEvent->key);
+            }
         });
 
         $posts = factory(Post::class, 30)->create();
-        $storedPosts = Post::cacheQuery(now()->addHours(1))->simplePaginate(15);
+        $storedPosts = DB::table('posts')->cacheQuery(now()->addHours(1))->paginate(15);
 
         $this->assertNotNull($writeEvent);
 
@@ -60,7 +60,7 @@ class SimplePaginateTest extends TestCase
         );
 
         // Expect a cache hit this time.
-        $storedPostsFromCache = Post::cacheQuery(now()->addHours(1))->simplePaginate(15);
+        $storedPostsFromCache = DB::table('posts')->cacheQuery(now()->addHours(1))->paginate(15);
         $this->assertNotNull($hitEvent);
 
         $this->assertEquals(
@@ -70,9 +70,9 @@ class SimplePaginateTest extends TestCase
     }
 
     /**
-     * @dataProvider strictModeContextProvider
+     * @dataProvider databaseContextProvider
      */
-    public function test_simple_paginate_with_columns()
+    public function test_paginate_with_columns()
     {
         /** @var KeyWritten|null $writeEvent */
         $writeEvent = null;
@@ -81,26 +81,25 @@ class SimplePaginateTest extends TestCase
         $hitEvent = null;
 
         Event::listen(KeyWritten::class, function (KeyWritten $event) use (&$writeEvent) {
-            $writeEvent = $event;
+            if (str_contains($event->key, 'select * from "posts" limit 15')) {
+                $writeEvent = $event;
 
-            $this->assertSame([], $writeEvent->tags);
-            $this->assertEquals(3600, $writeEvent->seconds);
-
-            $this->assertStringContainsString(
-                'select * from "posts" limit 16',
-                $writeEvent->key,
-            );
+                $this->assertSame([], $writeEvent->tags);
+                $this->assertEquals(3600, $writeEvent->seconds);
+            }
         });
 
         Event::listen(CacheHit::class, function (CacheHit $event) use (&$hitEvent, &$writeEvent) {
-            $hitEvent = $event;
+            if (str_contains($event->key, 'select * from "posts" limit 15')) {
+                $hitEvent = $event;
 
-            $this->assertSame([], $hitEvent->tags);
-            $this->assertEquals($writeEvent->key, $hitEvent->key);
+                $this->assertSame([], $hitEvent->tags);
+                $this->assertEquals($writeEvent->key, $hitEvent->key);
+            }
         });
 
         $posts = factory(Post::class, 30)->create();
-        $storedPosts = Post::cacheQuery(now()->addHours(1))->simplePaginate(15, ['name']);
+        $storedPosts = DB::table('posts')->cacheQuery(now()->addHours(1))->paginate(15, ['name']);
 
         $this->assertNotNull($writeEvent);
 
@@ -120,7 +119,7 @@ class SimplePaginateTest extends TestCase
         );
 
         // Expect a cache hit this time.
-        $storedPostsFromCache = Post::cacheQuery(now()->addHours(1))->simplePaginate(15, ['name']);
+        $storedPostsFromCache = DB::table('posts')->cacheQuery(now()->addHours(1))->paginate(15, ['name']);
         $this->assertNotNull($hitEvent);
 
         $this->assertEquals(
