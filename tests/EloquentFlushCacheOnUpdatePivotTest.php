@@ -2,8 +2,8 @@
 
 namespace Rennokki\QueryCache\Test;
 
-use Illuminate\Support\Facades\Event;
 use Illuminate\Cache\Events\KeyWritten;
+use Illuminate\Support\Facades\Event;
 use Rennokki\QueryCache\Test\Models\Role;
 use Rennokki\QueryCache\Test\Models\User;
 

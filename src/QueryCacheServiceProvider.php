@@ -3,11 +3,10 @@
 namespace Rennokki\QueryCache;
 
 use Illuminate\Database\Connection;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\ServiceProvider;
-use Rennokki\QueryCache\EloquentBuilderWithCache;
 
 class QueryCacheServiceProvider extends ServiceProvider
 {

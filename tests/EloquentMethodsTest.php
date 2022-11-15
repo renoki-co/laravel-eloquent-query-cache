@@ -2,14 +2,14 @@
 
 namespace Rennokki\QueryCache\Test;
 
-use Illuminate\Support\Str;
 use Illuminate\Cache\Events\CacheHit;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Cache\Events\KeyWritten;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
-use Rennokki\QueryCache\Test\Models\Kid;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Str;
 use Rennokki\QueryCache\Test\Models\Book;
+use Rennokki\QueryCache\Test\Models\Kid;
 use Rennokki\QueryCache\Test\Models\Page;
 use Rennokki\QueryCache\Test\Models\Post;
 use Rennokki\QueryCache\Test\Models\User;

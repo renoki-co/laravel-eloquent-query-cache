@@ -6,7 +6,6 @@ use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\KeyWritten;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
-use Rennokki\QueryCache\QueryCache;
 use Rennokki\QueryCache\Test\Models\Post;
 
 class DbCountTest extends DbTestCase

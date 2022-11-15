@@ -2,7 +2,6 @@
 
 namespace Rennokki\QueryCache\Test;
 
-use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\KeyWritten;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
