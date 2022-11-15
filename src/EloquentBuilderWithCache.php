@@ -4,6 +4,7 @@ namespace Rennokki\QueryCache;
 
 use Exception;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use ReflectionClass;
 
 /**
  * @method static \Rennokki\QueryCache\EloquentBuilderWithCache cacheQuery(\DateTime|int|null $time)
@@ -17,7 +18,7 @@ class EloquentBuilderWithCache extends EloquentBuilder
      *
      * @var \Illuminate\Database\Eloquent\Builder
      */
-    protected EloquentBuilder $originalEloquentBuilder;
+    protected EloquentBuilder $eloquentBuilder;
 
     /**
      * Create a new EloquentBuilder with cache.
@@ -33,14 +34,22 @@ class EloquentBuilderWithCache extends EloquentBuilder
             throw new Exception(sprintf('Class %s does not use the QueryCacheable trait.', get_class($model)));
         }
 
-        $eloquentBuilderWithCache = new static(
-           QueryBuilderWithCache::fromQueryBuilder(
-                $eloquentBuilder->getQuery(),
-                $time,
-                $model,
-            )
-        );
+        $eloquentBuilderWithCache = new static($eloquentBuilder->getQuery());
 
+        // Pull properties from the original class.
+        $eloquentBuilderReflection = new ReflectionClass($eloquentBuilder);
+        $propertiesToPull = $eloquentBuilderReflection->getProperties();
+
+        foreach ($propertiesToPull as $property) {
+            if ($property->isStatic()) {
+                // TODO: Set static::{$property->name} = $builder::{$property->name};
+                continue;
+            }
+
+            $eloquentBuilderWithCache->{$property->name} = $eloquentBuilder->{$property->name};
+        }
+
+        // Update the passthru to also include the underlying QueryBuilderWithCache builder.
         $eloquentBuilderWithCache->passthru = array_merge([
             'flushQueryCacheWithTag',
             'flushQueryCache',
@@ -50,7 +59,16 @@ class EloquentBuilderWithCache extends EloquentBuilder
             'getCacheTags',
         ], $eloquentBuilderWithCache->passthru);
 
-        $eloquentBuilderWithCache->setOriginalEloquentBuilder($eloquentBuilder);
+        // Update the underlying query to use cache.
+        $eloquentBuilderWithCache->setQuery(
+            QueryBuilderWithCache::fromQueryBuilder(
+                $eloquentBuilderWithCache->getQuery(),
+                $time,
+                $model,
+            )
+        );
+
+        $eloquentBuilderWithCache->setEloquentBuilder($eloquentBuilder);
         $eloquentBuilderWithCache->setModel($model);
 
         return $eloquentBuilderWithCache;
@@ -62,9 +80,9 @@ class EloquentBuilderWithCache extends EloquentBuilder
      * @param  \Illuminate\Database\Eloquent\Builder  $builder
      * @return $this
      */
-    public function setOriginalEloquentBuilder(EloquentBuilder $builder)
+    public function setEloquentBuilder(EloquentBuilder $builder)
     {
-        $this->originalEloquentBuilder = $builder;
+        $this->eloquentBuilder = $builder;
 
         return $this;
     }
@@ -76,9 +94,9 @@ class EloquentBuilderWithCache extends EloquentBuilder
      * @param  array  $parameters
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getOriginalEloquentBuilder()
+    public function getEloquentBuilder()
     {
-        return $this->originalEloquentBuilder;
+        return $this->eloquentBuilder;
     }
 
     /**
@@ -88,7 +106,7 @@ class EloquentBuilderWithCache extends EloquentBuilder
     {
         parent::__clone();
 
-        $this->originalEloquentBuilder = clone $this->originalEloquentBuilder;
+        $this->eloquentBuilder = clone $this->eloquentBuilder;
         $this->query = clone $this->query;
     }
 }

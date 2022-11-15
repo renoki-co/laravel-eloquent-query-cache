@@ -15,6 +15,11 @@ class Post extends Model
         'name',
     ];
 
+    public function scopeCustomNameLocalScope($query, string $name)
+    {
+        return $query->where('name', $name);
+    }
+
     public function getCacheBaseTags(): array
     {
         return [

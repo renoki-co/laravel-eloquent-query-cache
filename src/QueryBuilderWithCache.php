@@ -22,7 +22,7 @@ class QueryBuilderWithCache extends QueryBuilder implements QueryCacheModuleInte
      *
      * @var \Illuminate\Database\Query\Builder
      */
-    protected QueryBuilder $originalQueryBuilder;
+    protected QueryBuilder $queryBuilder;
 
     /**
      * Create a new QueryBuilder with cache.
@@ -40,6 +40,7 @@ class QueryBuilderWithCache extends QueryBuilder implements QueryCacheModuleInte
             $builder->getProcessor(),
         );
 
+        // Pull properties from the original class.
         $builderReflection = new ReflectionClass($builder);
         $propertiesToPull = $builderReflection->getProperties();
 
@@ -52,18 +53,20 @@ class QueryBuilderWithCache extends QueryBuilder implements QueryCacheModuleInte
             $builderWithCache->{$property->name} = $builder->{$property->name};
         }
 
-        $builderWithCache->setOriginalQueryBuilder($builder);
+        $builderWithCache->setQueryBuilder($builder);
 
-        $attributesToSeek = [
-            'cacheFor',
-            'cacheTags',
-            'cachePrefix',
-            'cacheDriver',
-            'cacheUsePlainKey',
-            'cacheUsePreviousKeyFingerprint',
-        ];
-
+        // When used with underlying Eloquent, seek within the model for variables
+        // that build the values for the cache module.
         if ($model) {
+            $attributesToSeek = [
+                'cacheFor',
+                'cacheTags',
+                'cachePrefix',
+                'cacheDriver',
+                'cacheUsePlainKey',
+                'cacheUsePreviousKeyFingerprint',
+            ];
+
             foreach ($attributesToSeek as $attr) {
                 $function = "{$attr}Value";
 
@@ -94,9 +97,9 @@ class QueryBuilderWithCache extends QueryBuilder implements QueryCacheModuleInte
      * @param  \Illuminate\Database\Query\Builder  $builder
      * @return $this
      */
-    public function setOriginalQueryBuilder(QueryBuilder $builder)
+    public function setQueryBuilder(QueryBuilder $builder)
     {
-        $this->originalQueryBuilder = $builder;
+        $this->queryBuilder = $builder;
 
         return $this;
     }
@@ -138,11 +141,13 @@ class QueryBuilderWithCache extends QueryBuilder implements QueryCacheModuleInte
     }
 
     /**
-     * {@inheritdoc}
+     * Get the original query builder.
+     *
+     * @return \Illuminate\Database\Query\Builder
      */
-    public function getOriginalBuilder()
+    public function getQueryBuilder()
     {
-        return $this->originalEloquentBuilder;
+        return $this->queryBuilder;
     }
 
     /**
@@ -152,7 +157,7 @@ class QueryBuilderWithCache extends QueryBuilder implements QueryCacheModuleInte
     {
         $clone = parent::clone();
 
-        $clone->setOriginalQueryBuilder(clone $this->originalQueryBuilder);
+        $clone->setQueryBuilder(clone $this->queryBuilder);
 
         return $clone;
     }
