@@ -7,10 +7,10 @@ coverage:
   round: down
   range: "70...100"
 
-status:
-  project: yes
-  patch: yes
-  changes: no
+  status:
+    project: yes
+    patch: yes
+    changes: no
 
 comment:
   layout: "reach, diff, flags, files, footer"
