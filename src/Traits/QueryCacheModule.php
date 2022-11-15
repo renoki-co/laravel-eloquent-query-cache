@@ -55,7 +55,7 @@ trait QueryCacheModule
     protected $cacheUsePlainKey = false;
 
     /**
-     * Specify if the cache key generation method should work like in 3.x
+     * Specify if the cache key generation method should work like in 3.x.
      *
      * @var bool
      */
@@ -449,7 +449,7 @@ trait QueryCacheModule
 
     /**
      * Check if the method generation method for the cache keys
-     * should be the same as in prev. version. (3.x)
+     * should be the same as in prev. version. (3.x).
      *
      * @return bool
      */

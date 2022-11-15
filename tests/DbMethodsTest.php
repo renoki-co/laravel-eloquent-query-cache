@@ -2,18 +2,17 @@
 
 namespace Rennokki\QueryCache\Test;
 
-use Illuminate\Support\Str;
 use Illuminate\Cache\Events\CacheHit;
+use Illuminate\Cache\Events\KeyWritten;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Cache\Events\KeyWritten;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Str;
 use Rennokki\QueryCache\QueryCache;
-use Rennokki\QueryCache\Test\Models\Kid;
 use Rennokki\QueryCache\Test\Models\Book;
+use Rennokki\QueryCache\Test\Models\Kid;
 use Rennokki\QueryCache\Test\Models\Post;
-use Rennokki\QueryCache\Test\Models\User;
 
 class DbMethodsTest extends DbTestCase
 {

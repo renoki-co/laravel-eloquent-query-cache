@@ -2,8 +2,6 @@
 
 namespace Rennokki\QueryCache\Test;
 
-use Illuminate\Database\Eloquent\Model;
-use Orchestra\Testbench\TestCase as Orchestra;
 use Rennokki\QueryCache\QueryCache;
 
 abstract class DbTestCase extends TestCase
