@@ -43,7 +43,7 @@ class DbFirstTest extends DbTestCase
         $posts = factory(Post::class, 5)->create();
 
         $storedPost = DB::table('posts')
-            ->cacheQuery(now()->addHours(1))
+            ->cacheFor(now()->addHours(1))
             ->first();
 
         $this->assertNotNull($writeEvent);
@@ -65,7 +65,7 @@ class DbFirstTest extends DbTestCase
 
         // Expect a cache hit this time.
         $storedPostFromCache = DB::table('posts')
-            ->cacheQuery(now()->addHours(1))
+            ->cacheFor(now()->addHours(1))
             ->first();
 
         $this->assertNotNull($hitEvent);
@@ -109,7 +109,7 @@ class DbFirstTest extends DbTestCase
         $posts = factory(Post::class, 5)->create();
 
         $storedPost = DB::table('posts')
-            ->cacheQuery(now()->addHours(1))
+            ->cacheFor(now()->addHours(1))
             ->first(['name']);
 
         $this->assertNotNull($writeEvent);
@@ -131,7 +131,7 @@ class DbFirstTest extends DbTestCase
 
         // Expect a cache hit this time.
         $storedPostFromCache = DB::table('posts')
-            ->cacheQuery(now()->addHours(1))
+            ->cacheFor(now()->addHours(1))
             ->first(['name']);
 
         $this->assertNotNull($hitEvent);

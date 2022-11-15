@@ -44,7 +44,7 @@ class DbCountTest extends DbTestCase
         $posts = factory(Post::class, 5)->create();
 
         $postsCount = DB::table('posts')
-            ->cacheQuery(now()->addHours(1))
+            ->cacheFor(now()->addHours(1))
             ->count();
 
         $this->assertNotNull($writeEvent);
@@ -66,7 +66,7 @@ class DbCountTest extends DbTestCase
 
         // Expect a cache hit this time.
         $postsCountFromCache = DB::table('posts')
-            ->cacheQuery(now()->addHours(1))
+            ->cacheFor(now()->addHours(1))
             ->count();
 
         $this->assertNotNull($hitEvent);
@@ -110,7 +110,7 @@ class DbCountTest extends DbTestCase
         $posts = factory(Post::class, 5)->create();
 
         $postsCount = DB::table('posts')
-            ->cacheQuery(now()->addHours(1))
+            ->cacheFor(now()->addHours(1))
             ->count(['name']);
 
         $this->assertNotNull($writeEvent);
@@ -132,7 +132,7 @@ class DbCountTest extends DbTestCase
 
         // Expect a cache hit this time.
         $postsCountFromCache = DB::table('posts')
-            ->cacheQuery(now()->addHours(1))
+            ->cacheFor(now()->addHours(1))
             ->count(['name']);
 
         $this->assertNotNull($hitEvent);

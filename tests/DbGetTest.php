@@ -41,7 +41,7 @@ class DbGetTest extends DbTestCase
         });
 
         $posts = factory(Post::class, 5)->create();
-        $storedPosts = DB::table('posts')->cacheQuery(now()->addHours(1))->get();
+        $storedPosts = DB::table('posts')->cacheFor(now()->addHours(1))->get();
 
         $this->assertNotNull($writeEvent);
 
@@ -61,7 +61,7 @@ class DbGetTest extends DbTestCase
         );
 
         // Expect a cache hit this time.
-        $storedPostsFromCache = DB::table('posts')->cacheQuery(now()->addHours(1))->get();
+        $storedPostsFromCache = DB::table('posts')->cacheFor(now()->addHours(1))->get();
         $this->assertNotNull($hitEvent);
 
         $this->assertEquals(
@@ -101,7 +101,7 @@ class DbGetTest extends DbTestCase
         });
 
         $posts = factory(Post::class, 30)->create();
-        $storedPosts = DB::table('posts')->cacheQuery(now()->addHours(1))->get(['name']);
+        $storedPosts = DB::table('posts')->cacheFor(now()->addHours(1))->get(['name']);
 
         $this->assertNotNull($writeEvent);
 
@@ -121,7 +121,7 @@ class DbGetTest extends DbTestCase
         );
 
         // Expect a cache hit this time.
-        $storedPostsFromCache = DB::table('posts')->cacheQuery(now()->addHours(1))->get(['name']);
+        $storedPostsFromCache = DB::table('posts')->cacheFor(now()->addHours(1))->get(['name']);
         $this->assertNotNull($hitEvent);
 
         $this->assertEquals(
@@ -161,7 +161,7 @@ class DbGetTest extends DbTestCase
         });
 
         $posts = factory(Post::class, 30)->create();
-        $storedPosts = DB::table('posts')->cacheQuery(now()->addHours(1))->get('name');
+        $storedPosts = DB::table('posts')->cacheFor(now()->addHours(1))->get('name');
 
         $this->assertNotNull($writeEvent);
 
@@ -181,7 +181,7 @@ class DbGetTest extends DbTestCase
         );
 
         // Expect a cache hit this time.
-        $storedPostsFromCache = DB::table('posts')->cacheQuery(now()->addHours(1))->get('name');
+        $storedPostsFromCache = DB::table('posts')->cacheFor(now()->addHours(1))->get('name');
         $this->assertNotNull($hitEvent);
 
         $this->assertEquals(

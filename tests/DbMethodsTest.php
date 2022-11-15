@@ -29,8 +29,8 @@ class DbMethodsTest extends DbTestCase
         factory(Post::class, 10)->create();
 
         $this->assertSame(
-            DB::table('posts')->cacheQuery(now()->addHours(1))->avoidCache()->get()->toJson(),
-            DB::table('posts')->cacheQuery(now()->addHours(1))->avoidCache()->get()->toJson(),
+            DB::table('posts')->cacheFor(now()->addHours(1))->avoidCache()->get()->toJson(),
+            DB::table('posts')->cacheFor(now()->addHours(1))->avoidCache()->get()->toJson(),
         );
     }
 
@@ -54,8 +54,8 @@ class DbMethodsTest extends DbTestCase
 
         factory(Post::class)->create();
 
-        DB::table('posts')->cacheQuery(now()->addHours(1))->cachePrefix('test')->first();
-        DB::table('posts')->cacheQuery(now()->addHours(1))->cachePrefix('test')->first();
+        DB::table('posts')->cacheFor(now()->addHours(1))->cachePrefix('test')->first();
+        DB::table('posts')->cacheFor(now()->addHours(1))->cachePrefix('test')->first();
 
         $this->assertTrue($writePassed && $hitPassed);
     }
@@ -86,8 +86,8 @@ class DbMethodsTest extends DbTestCase
 
         factory(Post::class)->create();
 
-        DB::table('posts')->cacheQuery(now()->addHours(1))->cacheTags(['test'])->first();
-        DB::table('posts')->cacheQuery(now()->addHours(1))->cacheTags(['test'])->first();
+        DB::table('posts')->cacheFor(now()->addHours(1))->cacheTags(['test'])->first();
+        DB::table('posts')->cacheFor(now()->addHours(1))->cacheTags(['test'])->first();
 
         $this->assertTrue($writePassed && $hitPassed);
     }
@@ -118,7 +118,7 @@ class DbMethodsTest extends DbTestCase
         factory(Post::class)->create();
 
         DB::table('posts')
-            ->cacheQuery(now()->addHours(1))
+            ->cacheFor(now()->addHours(1))
             ->cacheTags(['test'])
             ->first();
 
@@ -155,7 +155,7 @@ class DbMethodsTest extends DbTestCase
         factory(Book::class)->create();
 
         DB::table('books')
-            ->cacheQuery(now()->addHours(1))
+            ->cacheFor(now()->addHours(1))
             ->cacheTags(['test'])
             ->first();
 
@@ -178,7 +178,7 @@ class DbMethodsTest extends DbTestCase
         factory(Kid::class)->create();
 
         DB::table('kids')
-            ->cacheQuery(now()->addHours(1))
+            ->cacheFor(now()->addHours(1))
             ->withPlainKey(false)
             ->first();
 
@@ -203,7 +203,7 @@ class DbMethodsTest extends DbTestCase
         factory(Book::class)->create();
 
         DB::table('books')
-            ->cacheQuery(now()->addHours(1))
+            ->cacheFor(now()->addHours(1))
             ->appendCacheTags(['test'])
             ->appendCacheTags(['test2'])
             ->first();
@@ -241,7 +241,7 @@ class DbMethodsTest extends DbTestCase
         factory(Post::class)->create();
 
         DB::table('posts')
-            ->cacheQuery(now()->addHours(1))
+            ->cacheFor(now()->addHours(1))
             ->cacheTags(['test'])
             ->first();
 

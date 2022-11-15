@@ -40,7 +40,7 @@ class DbPaginateTest extends DbTestCase
         });
 
         $posts = factory(Post::class, 30)->create();
-        $storedPosts = DB::table('posts')->cacheQuery(now()->addHours(1))->paginate(15);
+        $storedPosts = DB::table('posts')->cacheFor(now()->addHours(1))->paginate(15);
 
         $this->assertNotNull($writeEvent);
 
@@ -60,7 +60,7 @@ class DbPaginateTest extends DbTestCase
         );
 
         // Expect a cache hit this time.
-        $storedPostsFromCache = DB::table('posts')->cacheQuery(now()->addHours(1))->paginate(15);
+        $storedPostsFromCache = DB::table('posts')->cacheFor(now()->addHours(1))->paginate(15);
         $this->assertNotNull($hitEvent);
 
         $this->assertEquals(
@@ -99,7 +99,7 @@ class DbPaginateTest extends DbTestCase
         });
 
         $posts = factory(Post::class, 30)->create();
-        $storedPosts = DB::table('posts')->cacheQuery(now()->addHours(1))->paginate(15, ['name']);
+        $storedPosts = DB::table('posts')->cacheFor(now()->addHours(1))->paginate(15, ['name']);
 
         $this->assertNotNull($writeEvent);
 
@@ -119,7 +119,7 @@ class DbPaginateTest extends DbTestCase
         );
 
         // Expect a cache hit this time.
-        $storedPostsFromCache = DB::table('posts')->cacheQuery(now()->addHours(1))->paginate(15, ['name']);
+        $storedPostsFromCache = DB::table('posts')->cacheFor(now()->addHours(1))->paginate(15, ['name']);
         $this->assertNotNull($hitEvent);
 
         $this->assertEquals(

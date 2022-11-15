@@ -165,9 +165,7 @@ trait QueryCacheModule
         $name = $connection->getName();
 
         if ($this->shouldUsePreviousKeyGenerationMethod()) {
-            return $method === 'count'
-                ? $name.$method.$id.serialize($this->getBindings()).$appends
-                : $name.$method.$id.$this->toSql().serialize($this->getBindings()).$appends;
+            return $name.$method.$id.$this->toSql().serialize($this->getBindings()).$appends;
         }
 
         return sprintf(

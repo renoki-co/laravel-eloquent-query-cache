@@ -205,7 +205,7 @@ class EloquentMethodsTest extends EloquentTestCase
                 $this->assertEquals(['test', Book::class], $event->tags);
             }
 
-            $this->assertTrue(Book::flushQueryCache(['test']));
+            $this->assertTrue(Book::flushQueryCacheWithTag('test'));
 
             if ($this->driverSupportsTags()) {
                 $this->assertNull(Cache::tags(['test', Book::class])->get($event->key));
@@ -298,6 +298,9 @@ class EloquentMethodsTest extends EloquentTestCase
             ->appendCacheTags(['user']);
 
         $this->assertEquals(['user'], $userAndPosts->getCacheTags());
+
+        $result = $userAndPosts->first();
+        $this->assertEquals(3, $result->posts_count);
     }
 
     /**
