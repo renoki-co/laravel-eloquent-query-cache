@@ -30,7 +30,7 @@ jobs:
           - database
           - file
           - redis
-          - memcached
+          # - memcached
         include:
           - laravel: 9.*
             testbench: 7.*
