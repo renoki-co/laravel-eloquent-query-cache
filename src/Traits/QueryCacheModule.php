@@ -366,6 +366,10 @@ trait QueryCacheModule
      */
     public function shouldAvoidCache(): bool
     {
+        if (config('eloquent-query-cache.enabled') === false){
+            return true;
+        }
+        
         return $this->avoidCache;
     }
 
