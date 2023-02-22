@@ -1,5 +1,5 @@
 {
-    "name": "advil0/laravel-eloquent-query-cache",
+    "name": "rennokki/laravel-eloquent-query-cache",
     "description": "Adding cache on your Laravel Eloquent queries' results is now a breeze.",
     "keywords": [
         "laravel",
@@ -10,12 +10,12 @@
         "sql"
     ],
     "license": "Apache-2.0",
-    "homepage": "https://github.com/advil0/laravel-eloquent-query-cache",
+    "homepage": "https://github.com/renoki-co/laravel-eloquent-query-cache",
     "authors": [
         {
-            "name": "Tyler Neal",
-            "email": "tyler@neal.fyi",
-            "homepage": "https://github.com/advil0",
+            "name": "Alex Renoki",
+            "email": "alex@renoki.org",
+            "homepage": "https://github.com/rennokki",
             "role": "Developer"
         }
     ],
@@ -25,12 +25,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Advil0\\QueryCache\\": "src/"
+            "Rennokki\\QueryCache\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Advil0\\QueryCache\\Test\\": "tests"
+            "Rennokki\\QueryCache\\Test\\": "tests"
         }
     },
     "scripts": {
