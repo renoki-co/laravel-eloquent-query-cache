@@ -18,19 +18,19 @@ jobs:
       fail-fast: false
       matrix:
         php:
-          - '8.0'
           - '8.1'
+          - '8.2'
         laravel:
-          - 8.*
           - 9.*
+          - 10.*
         prefer:
           - 'prefer-lowest'
           - 'prefer-stable'
         include:
-          - laravel: '8.*'
-            testbench: '6.*'
           - laravel: 9.*
             testbench: 7.*
+          - laravel: 10.*
+            testbench: 8.*
 
     name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} --${{ matrix.prefer }}
 
@@ -52,7 +52,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "orchestra/database:${{ matrix.testbench }}" --no-interaction --no-update
+        composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
         composer update --${{ matrix.prefer }} --prefer-dist --no-interaction --no-suggest
 
     - name: Run tests
