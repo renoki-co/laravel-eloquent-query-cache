@@ -36,7 +36,7 @@
     "scripts": {
         "test": "vendor/bin/phpunit"
     },
-    "require-dev1": {
+    "require-dev": {
         "chelout/laravel-relationship-events": "^1.5|^2.0|^3.0",
         "laravel/legacy-factories": "^1.4",
         "livewire/livewire": "dev-main",
