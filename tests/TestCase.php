@@ -106,7 +106,7 @@ abstract class TestCase extends Orchestra
             : Cache::get($key);
     }
 
-    public function strictModeContextProvider(): iterable
+    public static function strictModeContextProvider(): iterable
     {
         yield [true];
         yield [false];
