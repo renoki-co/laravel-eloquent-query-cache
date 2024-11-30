@@ -34,7 +34,7 @@ class PostComponent extends Component
 {
     public Post $post;
 
-    public static function getName()
+    public function getName()
     {
         return 'post';
     }
