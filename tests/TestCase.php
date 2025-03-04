@@ -15,7 +15,10 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
-        if ($this->getProvidedData() && method_exists(Model::class, 'preventAccessingMissingAttributes')) {
+        if (method_exists($this, 'getProvidedData')
+            && $this->getProvidedData()
+            && method_exists(Model::class, 'preventAccessingMissingAttributes')
+        ) {
             [$strict] = $this->getProvidedData();
             Model::preventAccessingMissingAttributes($strict);
         }
@@ -99,7 +102,7 @@ abstract class TestCase extends Orchestra
      * @param  array|null  $tags
      * @return mixed
      */
-    protected function getCacheWithTags(string $key, $tags = null)
+    protected function getCacheWithTags(string $key, ?array $tags = null)
     {
         return $this->driverSupportsTags()
             ? Cache::tags($tags)->get($key)

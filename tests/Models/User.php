@@ -4,6 +4,7 @@ namespace Rennokki\QueryCache\Test\Models;
 
 use Chelout\RelationshipEvents\Concerns\HasBelongsToManyEvents;
 use Chelout\RelationshipEvents\Traits\HasRelationshipObservables;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Rennokki\QueryCache\Traits\QueryCacheable;
 
@@ -42,7 +43,7 @@ class User extends Authenticatable
         return 3600;
     }
 
-    public function getCacheTagsToInvalidateOnUpdate($relation = null, $pivotedModels = null): array
+    public function getCacheTagsToInvalidateOnUpdate($relation = null, ?Collection $pivotedModels = null): array
     {
         if ($relation === 'roles') {
             $tags = array_reduce($pivotedModels->all(), function ($tags, Role $role) {
