@@ -3,12 +3,12 @@ name: CI
 on:
   push:
     branches:
-      - *
+      - "*"
     tags:
-      - *
+      - "*"
   pull_request:
     branches:
-      - *
+      - "*"
 
 jobs:
   build:
@@ -66,4 +66,4 @@ jobs:
       - uses: codecov/codecov-action@v3.1.1
         with:
           fail_ci_if_error: false
-          file: *.xml
+          file: "*.xml"
