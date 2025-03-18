@@ -2,6 +2,7 @@
 
 namespace Rennokki\QueryCache\Traits;
 
+use Illuminate\Database\Eloquent\Collection;
 use Rennokki\QueryCache\FlushQueryCacheObserver;
 use Rennokki\QueryCache\Query\Builder;
 
@@ -68,7 +69,7 @@ trait QueryCacheable
      * @param  \Illuminate\Database\Eloquent\Collection|null  $pivotedModels
      * @return array
      */
-    public function getCacheTagsToInvalidateOnUpdate($relation = null, $pivotedModels = null): array
+    public function getCacheTagsToInvalidateOnUpdate($relation = null, ?Collection $pivotedModels = null): array
     {
         /** @var \Illuminate\Database\Eloquent\Model $this */
         return $this->getCacheBaseTags();

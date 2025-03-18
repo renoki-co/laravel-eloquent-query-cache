@@ -69,7 +69,7 @@ trait QueryCacheModule
      * @param  string|null  $id
      * @return array
      */
-    public function getFromQueryCache(string $method = 'get', array $columns = ['*'], string $id = null)
+    public function getFromQueryCache(string $method = 'get', array $columns = ['*'], ?string $id = null)
     {
         if (is_null($this->columns)) {
             $this->columns = $columns;
@@ -95,7 +95,7 @@ trait QueryCacheModule
      * @param  string|null  $id
      * @return \Closure
      */
-    public function getQueryCacheCallback(string $method = 'get', $columns = ['*'], string $id = null)
+    public function getQueryCacheCallback(string $method = 'get', $columns = ['*'], ?string $id = null)
     {
         return function () use ($method, $columns) {
             $this->avoidCache = true;
@@ -112,7 +112,7 @@ trait QueryCacheModule
      * @param  string|null  $appends
      * @return string
      */
-    public function getCacheKey(string $method = 'get', string $id = null, string $appends = null): string
+    public function getCacheKey(string $method = 'get', ?string $id = null, ?string $appends = null): string
     {
         $key = $this->generateCacheKey($method, $id, $appends);
         $prefix = $this->getCachePrefix();
@@ -128,7 +128,7 @@ trait QueryCacheModule
      * @param  string|null  $appends
      * @return string
      */
-    public function generateCacheKey(string $method = 'get', string $id = null, string $appends = null): string
+    public function generateCacheKey(string $method = 'get', ?string $id = null, ?string $appends = null): string
     {
         $key = $this->generatePlainCacheKey($method, $id, $appends);
 
@@ -147,7 +147,7 @@ trait QueryCacheModule
      * @param  string|null  $appends
      * @return string
      */
-    public function generatePlainCacheKey(string $method = 'get', string $id = null, string $appends = null): string
+    public function generatePlainCacheKey(string $method = 'get', ?string $id = null, ?string $appends = null): string
     {
         $name = $this->connection->getName();
 

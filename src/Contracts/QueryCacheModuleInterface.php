@@ -12,7 +12,7 @@ interface QueryCacheModuleInterface
      * @param  string|null  $appends
      * @return string
      */
-    public function generatePlainCacheKey(string $method = 'get', string $id = null, string $appends = null): string;
+    public function generatePlainCacheKey(string $method = 'get', string $id = null, ?string $appends = null): string;
 
     /**
      * Get the query cache callback.
@@ -22,5 +22,5 @@ interface QueryCacheModuleInterface
      * @param  string|null  $id
      * @return \Closure
      */
-    public function getQueryCacheCallback(string $method = 'get', $columns = ['*'], string $id = null);
+    public function getQueryCacheCallback(string $method = 'get', $columns = ['*'], ?string $id = null);
 }
