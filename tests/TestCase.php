@@ -15,8 +15,13 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
-        if ($this->getProvidedData() && method_exists(Model::class, 'preventAccessingMissingAttributes')) {
-            [$strict] = $this->getProvidedData();
+        // PHPUnit 12 replaced getProvidedData() with providedData().
+        $providedData = method_exists($this, 'providedData')
+            ? $this->providedData()
+            : $this->getProvidedData();
+
+        if ($providedData && method_exists(Model::class, 'preventAccessingMissingAttributes')) {
+            [$strict] = $providedData;
             Model::preventAccessingMissingAttributes($strict);
         }
 
@@ -90,6 +95,30 @@ abstract class TestCase extends Orchestra
     protected function clearCache()
     {
         $this->artisan('cache:clear');
+    }
+
+    /**
+     * Get the cached aggregate result for a count query.
+     *
+     * Laravel 13 quotes the aggregate alias ("aggregate") while earlier
+     * versions leave it unquoted, which changes the generated SQL and thus
+     * the cache key. Try both forms so tests pass across all versions.
+     *
+     * @param  string  $countExpr
+     * @param  string  $table
+     * @return mixed
+     */
+    protected function getCountCache(string $countExpr = 'count(*)', string $table = 'posts')
+    {
+        foreach (['aggregate', '"aggregate"'] as $alias) {
+            $cache = Cache::get("leqc:sqlitegetselect {$countExpr} as {$alias} from \"{$table}\"a:0:{}");
+
+            if (! is_null($cache)) {
+                return $cache;
+            }
+        }
+
+        return null;
     }
 
     /**

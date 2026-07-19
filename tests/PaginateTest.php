@@ -16,7 +16,7 @@ class PaginateTest extends TestCase
         $storedPosts = Post::cacheFor(now()->addHours(1))->paginate(15);
         $postsCount = $posts->count();
 
-        $totalCountCache = Cache::get('leqc:sqlitegetselect count(*) as aggregate from "posts"a:0:{}');
+        $totalCountCache = $this->getCountCache('count(*)');
         $postsCache = Cache::get('leqc:sqlitegetselect * from "posts" limit 15 offset 0a:0:{}');
 
         $this->assertNotNull($totalCountCache);
@@ -40,7 +40,7 @@ class PaginateTest extends TestCase
         $storedPosts = Post::cacheFor(now()->addHours(1))->paginate(15, ['name']);
         $postsCount = $posts->count();
 
-        $totalCountCache = Cache::get('leqc:sqlitegetselect count(*) as aggregate from "posts"a:0:{}');
+        $totalCountCache = $this->getCountCache('count(*)');
         $postsCache = Cache::get('leqc:sqlitegetselect "name" from "posts" limit 15 offset 0a:0:{}');
 
         $this->assertNotNull($totalCountCache);
