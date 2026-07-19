@@ -29,9 +29,19 @@ trait QueryCacheable
     {
         /** @var \Illuminate\Database\Eloquent\Model $this */
         if (isset(static::$flushCacheOnUpdate) && static::$flushCacheOnUpdate) {
-            static::observe(
+            $registerObserver = fn () => static::observe(
                 static::getFlushQueryCacheObserver()
             );
+
+            // Laravel 12+ finishes booting before marking the model as booted and
+            // forbids instantiating the model (which observe() does) mid-boot, so
+            // defer registration until boot completes. Older versions lack
+            // whenBooted() and tolerate registering during boot.
+            if (method_exists(static::class, 'whenBooted')) {
+                static::whenBooted($registerObserver);
+            } else {
+                $registerObserver();
+            }
         }
     }
 
