@@ -12,7 +12,7 @@
 
 use Illuminate\Support\Str;
 
-$factory->define(\Rennokki\QueryCache\Test\Models\Book::class, function () {
+$factory->define(\Mohamadtsn\QueryCache\Test\Models\Book::class, function () {
     return [
         'name' => 'Book'.Str::random(5),
     ];

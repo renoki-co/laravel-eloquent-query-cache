@@ -1,6 +1,6 @@
 <?php
 
-namespace Rennokki\QueryCache;
+namespace Mohamadtsn\QueryCache;
 
 use Exception;
 use Illuminate\Database\Eloquent\Model;

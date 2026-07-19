@@ -1,11 +1,11 @@
 <?php
 
-namespace Rennokki\QueryCache\Test;
+namespace Mohamadtsn\QueryCache\Test;
 
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use Livewire\Livewire;
-use Rennokki\QueryCache\Test\Models\Post;
+use Mohamadtsn\QueryCache\Test\Models\Post;
 
 class LivewireTest extends TestCase
 {

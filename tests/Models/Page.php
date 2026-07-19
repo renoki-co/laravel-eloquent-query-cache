@@ -1,9 +1,9 @@
 <?php
 
-namespace Rennokki\QueryCache\Test\Models;
+namespace Mohamadtsn\QueryCache\Test\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Rennokki\QueryCache\Traits\QueryCacheable;
+use Mohamadtsn\QueryCache\Traits\QueryCacheable;
 
 class Page extends Model
 {

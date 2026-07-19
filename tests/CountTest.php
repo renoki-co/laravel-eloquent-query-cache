@@ -1,8 +1,8 @@
 <?php
 
-namespace Rennokki\QueryCache\Test;
+namespace Mohamadtsn\QueryCache\Test;
 
-use Rennokki\QueryCache\Test\Models\Post;
+use Mohamadtsn\QueryCache\Test\Models\Post;
 
 class CountTest extends TestCase
 {

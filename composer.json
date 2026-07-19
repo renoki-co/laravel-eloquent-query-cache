@@ -1,5 +1,5 @@
 {
-    "name": "rennokki/laravel-eloquent-query-cache",
+    "name": "mohamadtsn/laravel-eloquent-query-cache",
     "description": "Adding cache on your Laravel Eloquent queries' results is now a breeze.",
     "keywords": [
         "laravel",
@@ -25,12 +25,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Rennokki\\QueryCache\\": "src/"
+            "Mohamadtsn\\QueryCache\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Rennokki\\QueryCache\\Test\\": "tests"
+            "Mohamadtsn\\QueryCache\\Test\\": "tests"
         }
     },
     "scripts": {

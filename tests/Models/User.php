@@ -1,11 +1,11 @@
 <?php
 
-namespace Rennokki\QueryCache\Test\Models;
+namespace Mohamadtsn\QueryCache\Test\Models;
 
 use Chelout\RelationshipEvents\Concerns\HasBelongsToManyEvents;
 use Chelout\RelationshipEvents\Traits\HasRelationshipObservables;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Rennokki\QueryCache\Traits\QueryCacheable;
+use Mohamadtsn\QueryCache\Traits\QueryCacheable;
 
 class User extends Authenticatable
 {

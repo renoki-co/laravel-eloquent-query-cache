@@ -12,7 +12,7 @@
 
 use Illuminate\Support\Str;
 
-$factory->define(\Rennokki\QueryCache\Test\Models\User::class, function () {
+$factory->define(\Mohamadtsn\QueryCache\Test\Models\User::class, function () {
     return [
         'name' => 'Name'.Str::random(5),
         'email' => Str::random(5).'@gmail.com',
