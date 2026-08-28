@@ -82,6 +82,54 @@ class FlushCacheOnUpdateTest extends TestCase
     /**
      * @dataProvider strictModeContextProvider
      */
+    public function test_flush_cache_on_builder_update()
+    {
+        $page = factory(Page::class)->create();
+        $storedPage = Page::cacheFor(now()->addHours(1))->first();
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
+
+        $this->assertNotNull($cache);
+
+        $this->assertEquals(
+            $cache->first()->id,
+            $storedPage->id
+        );
+
+        Page::where('id', $page->id)->update([
+            'name' => '9GAG',
+        ]);
+
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
+
+        $this->assertNull($cache);
+    }
+
+    /**
+     * @dataProvider strictModeContextProvider
+     */
+    public function test_flush_cache_on_builder_delete()
+    {
+        $page = factory(Page::class)->create();
+        $storedPage = Page::cacheFor(now()->addHours(1))->first();
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
+
+        $this->assertNotNull($cache);
+
+        $this->assertEquals(
+            $cache->first()->id,
+            $storedPage->id
+        );
+
+        Page::where('id', $page->id)->delete();
+
+        $cache = $this->getCacheWithTags('leqc:sqlitegetselect * from "pages" limit 1a:0:{}', ['test']);
+
+        $this->assertNull($cache);
+    }
+
+    /**
+     * @dataProvider strictModeContextProvider
+     */
     public function test_flush_cache_on_force_deletion()
     {
         $page = factory(Page::class)->create();
