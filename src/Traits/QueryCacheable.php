@@ -17,6 +17,7 @@ use Rennokki\QueryCache\Query\Builder;
  * @method static \Illuminate\Database\Query\Builder|static appendCacheTags(array $cacheTags = [])
  * @method static \Illuminate\Database\Query\Builder|static cacheDriver(string $cacheDriver)
  * @method static \Illuminate\Database\Query\Builder|static cacheBaseTags(array $tags = [])
+ * @method static \Illuminate\Database\Query\Builder|static flushCacheOnUpdate(bool $flushCacheOnUpdate = true)
  */
 trait QueryCacheable
 {
@@ -89,6 +90,10 @@ trait QueryCacheable
         );
 
         $builder->dontCache();
+
+        if (isset(static::$flushCacheOnUpdate) && static::$flushCacheOnUpdate) {
+            $builder->flushCacheOnUpdate();
+        }
 
         if (property_exists($this, 'cacheFor')) {
             $builder->cacheFor($this->cacheFor);

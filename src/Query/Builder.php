@@ -24,6 +24,34 @@ class Builder extends BaseBuilder implements QueryCacheModuleInterface
     /**
      * {@inheritdoc}
      */
+    public function update(array $values)
+    {
+        $result = parent::update($values);
+
+        if ($this->flushCacheOnUpdate) {
+            $this->flushQueryCache();
+        }
+
+        return $result;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete($id = null)
+    {
+        $result = parent::delete($id);
+
+        if ($this->flushCacheOnUpdate) {
+            $this->flushQueryCache();
+        }
+
+        return $result;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function useWritePdo()
     {
         // Do not cache when using the write pdo for query.

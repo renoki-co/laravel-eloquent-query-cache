@@ -32,6 +32,15 @@ trait QueryCacheModule
     protected $cacheBaseTags = null;
 
     /**
+     * Whether to flush the cache for the base tags when this query
+     * performs a bulk update() or delete(), mirroring what
+     * $flushCacheOnUpdate already does for individual model events.
+     *
+     * @var bool
+     */
+    protected $flushCacheOnUpdate = false;
+
+    /**
      * The cache driver to be used.
      *
      * @var string
@@ -247,6 +256,21 @@ trait QueryCacheModule
     public function doNotCache(bool $avoidCache = true)
     {
         return $this->dontCache($avoidCache);
+    }
+
+    /**
+     * Indicate that a bulk update() or delete() on this query should
+     * flush the cache for the base tags, same as $flushCacheOnUpdate
+     * already does for individual model events.
+     *
+     * @param  bool  $flushCacheOnUpdate
+     * @return \Illuminate\Database\Query\Builder|static
+     */
+    public function flushCacheOnUpdate(bool $flushCacheOnUpdate = true)
+    {
+        $this->flushCacheOnUpdate = $flushCacheOnUpdate;
+
+        return $this;
     }
 
     /**
